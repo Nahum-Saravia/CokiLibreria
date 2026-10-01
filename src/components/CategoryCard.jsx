@@ -1,9 +1,10 @@
+import { Link } from 'react-router-dom';
 import Card from 'react-bootstrap/Card';
 import './CategoryCard.css';
 
 function CategoryCard({ imagen, alt, titulo, textoBoton, link }) {
   return (
-    <Card as="a" href={link} className="w-100 text-decoration-none coki-category-card">
+    <Card as={Link} to={link} className="w-100 text-decoration-none coki-category-card">
       <div className="coki-category-card__media">
         <Card.Img variant="top" src={imagen} alt={alt} className="w-100 h-100 object-fit-contain p-2" />
       </div>
