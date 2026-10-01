@@ -1,0 +1,27 @@
+.coki-category-card {
+  max-width: 360px;
+  color: var(--color-tinta);
+  background-color: var(--color-superficie);
+  border: var(--borde);
+  border-radius: var(--radio-md);
+  box-shadow: var(--sombra-dura);
+  overflow: hidden;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.coki-category-card:hover,
+.coki-category-card:focus-visible {
+  color: var(--color-tinta);
+  transform: scale(1.04);
+  box-shadow: 6px 8px 0 1px var(--color-acento);
+}
+
+.coki-category-card:hover .btn-primary {
+  background-color: var(--color-primario-oscuro);
+}
+
+.coki-category-card__media {
+  aspect-ratio: 16 / 10;
+  background-image: linear-gradient(135deg, #f9d9e5, #ead4f0);
+  border-bottom: var(--borde);
+}
