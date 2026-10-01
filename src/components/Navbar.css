@@ -1,0 +1,45 @@
+.coki-navbar {
+  --bs-navbar-color: var(--color-tinta);
+  --bs-navbar-hover-color: var(--color-tinta);
+  --bs-navbar-active-color: var(--color-tinta);
+  background-color: var(--color-superficie-alt);
+  border-bottom: var(--borde);
+}
+
+.coki-navbar .btn {
+  font-family: var(--fuente-titulos);
+}
+
+.coki-navbar__logo {
+  max-height: 52px;
+}
+
+.coki-navbar__toggle {
+  color: #fff;
+  background-color: var(--color-primario);
+  border: var(--borde);
+  border-radius: var(--radio-md);
+  box-shadow: var(--sombra-dura-sm);
+}
+
+.coki-navbar__links {
+  background-color: rgba(47, 42, 86, 0.06);
+  border: 2px solid rgba(47, 42, 86, 0.15);
+}
+
+.coki-navbar .nav-link:hover,
+.coki-navbar__carrito:hover,
+.coki-offcanvas__carrito:hover {
+  background-color: rgba(47, 42, 86, 0.08);
+}
+
+.coki-offcanvas {
+  --bs-offcanvas-width: 16rem;
+  --bs-offcanvas-bg: var(--color-superficie-alt);
+  --bs-offcanvas-border-width: 2px;
+  --bs-offcanvas-border-color: var(--color-borde);
+}
+
+.coki-offcanvas .offcanvas-header {
+  border-bottom: var(--borde);
+}
