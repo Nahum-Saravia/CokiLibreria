@@ -7,6 +7,7 @@ import categorias from '../data/categorias';
 function Home() {
   return (
     <main className="flex-grow-1">
+      <title>Coki Librería - Inicio</title>
       <Container className="py-4">
         <h1 className="text-center fw-bold pt-5 pb-2 coki-texto-claro">Coki Librería</h1>
 
