@@ -1,0 +1,32 @@
+.coki-footer {
+  color: var(--color-superficie);
+  background-color: var(--color-fondo-oscuro);
+  border-top: 3px solid var(--color-acento);
+}
+
+.coki-footer__titulo {
+  font-size: 1rem;
+  color: var(--color-acento);
+  letter-spacing: 0.02em;
+  margin-bottom: var(--esp-sm);
+}
+
+.coki-footer a {
+  color: var(--color-superficie);
+  text-decoration: none;
+}
+
+.coki-footer a:hover,
+.coki-footer a:focus-visible {
+  color: var(--color-acento);
+  text-decoration: underline;
+}
+
+.coki-footer__icono {
+  color: var(--color-acento);
+}
+
+.coki-footer__sep {
+  border-top: 1px solid rgba(243, 233, 231, 0.25);
+  opacity: 1;
+}
