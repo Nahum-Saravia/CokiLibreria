@@ -40,16 +40,32 @@ function Libreria() {
   }
 
   function agregarAlCarrito(producto) {
-    const carrito = JSON.parse(localStorage.getItem('coki-carrito') || '[]');
-    const yaEstaba = carrito.find((item) => item.id === producto.id);
+    const carrito = JSON.parse(
+      localStorage.getItem('coki-carrito') || '[]'
+    );
+
+    const yaEstaba = carrito.find(
+      (item) => item.id === producto.id
+    );
 
     if (yaEstaba) {
       yaEstaba.cantidad += 1;
     } else {
-      carrito.push({ id: producto.id, nombre: producto.nombre, precio: producto.precio, cantidad: 1 });
+      carrito.push({
+        id: producto.id,
+        nombre: producto.nombre,
+        precio: producto.precio,
+        cantidad: 1
+      });
     }
 
-    localStorage.setItem('coki-carrito', JSON.stringify(carrito));
+    localStorage.setItem(
+      'coki-carrito',
+      JSON.stringify(carrito)
+    );
+
+    window.dispatchEvent(new Event('carritoActualizado'));
+
     setAviso(`Agregaste "${producto.nombre}" al carrito.`);
   }
 

@@ -1,0 +1,122 @@
+.sesion-page {
+  min-height: calc(100vh - 150px);
+  padding-bottom: var(--esp-xl);
+}
+
+.sesion-header {
+  text-align: center;
+  color: var(--color-sobre-fondo);
+  padding: var(--esp-xl) var(--esp-md) var(--esp-lg);
+}
+
+.sesion-header h1 {
+  margin: var(--esp-md) 0 var(--esp-sm);
+  font-size: 2.5rem;
+}
+
+.sesion-header p {
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 600;
+}
+
+.sesion-logo {
+  width: 82px;
+  height: 82px;
+  object-fit: contain;
+}
+
+.sesion-container {
+  padding-top: var(--esp-md);
+}
+
+.sesion-title {
+  color: var(--color-sobre-fondo);
+  text-align: center;
+  margin-bottom: var(--esp-md);
+  font-size: 1.7rem;
+}
+
+.sesion-card {
+  background-color: var(--color-superficie);
+  border: var(--borde);
+  border-radius: var(--radio-lg);
+  box-shadow: var(--sombra-dura);
+}
+
+.sesion-card .card-body {
+  border-radius: var(--radio-lg);
+}
+
+.sesion-legend {
+  width: 100%;
+  color: var(--color-tinta);
+  font-family: var(--fuente-titulos);
+  font-weight: 600;
+  text-align: center;
+  margin-bottom: var(--esp-lg);
+}
+
+.sesion-card .form-label {
+  color: var(--color-tinta);
+  font-weight: 800;
+}
+
+.sesion-input {
+  border: var(--borde);
+  border-radius: var(--radio-md);
+  color: var(--color-texto);
+  background-color: var(--color-superficie-alt);
+  font-family: var(--fuente-texto);
+  min-height: 44px;
+}
+
+.sesion-input:focus {
+  border-color: var(--color-primario);
+  box-shadow: 0 0 0 0.2rem rgba(222, 84, 153, 0.2);
+}
+
+.sesion-button {
+  background-color: var(--color-primario);
+  border: var(--borde);
+  border-radius: var(--radio-md);
+  box-shadow: var(--sombra-dura-sm);
+  color: #fff;
+  font-family: var(--fuente-texto);
+  font-weight: 800;
+  padding: 0.65rem 1rem;
+}
+
+.sesion-button:hover,
+.sesion-button:focus,
+.sesion-button:active {
+  background-color: var(--color-primario-oscuro) !important;
+  border-color: var(--color-borde) !important;
+  color: #fff !important;
+}
+
+.sesion-link-text,
+.sesion-back {
+  text-align: center;
+  color: var(--color-sobre-fondo);
+  font-weight: 600;
+}
+
+.sesion-link-text {
+  margin: var(--esp-md) 0 0;
+}
+
+.sesion-link-text a,
+.sesion-back a {
+  color: var(--color-sobre-fondo);
+  font-weight: 800;
+}
+
+.sesion-link-text a:hover,
+.sesion-back a:hover {
+  color: #fff;
+}
+
+.sesion-back {
+  margin-top: var(--esp-lg);
+}
