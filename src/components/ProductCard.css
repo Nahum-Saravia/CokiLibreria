@@ -1,0 +1,47 @@
+.coki-product-card {
+  background-color: var(--color-superficie-alt);
+  border: var(--borde);
+  border-radius: var(--radio-md);
+  box-shadow: var(--sombra-dura-sm);
+  overflow: hidden;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.coki-product-card:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--sombra-dura);
+}
+
+.coki-product-card__media {
+  aspect-ratio: 3 / 2;
+  background-color: #fff;
+  border-bottom: var(--borde);
+}
+
+.coki-product-card__categoria {
+  letter-spacing: 0.06em;
+  color: var(--color-secundario);
+}
+
+.coki-product-card__nombre,
+.coki-product-card__descripcion {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.coki-product-card__nombre {
+  line-height: 1.25;
+  color: var(--color-tinta);
+}
+
+.coki-product-card__descripcion {
+  line-height: 1.35;
+  color: var(--color-texto-suave);
+}
+
+.coki-product-card__precio {
+  font-family: var(--fuente-titulos);
+  color: var(--color-primario-oscuro);
+}

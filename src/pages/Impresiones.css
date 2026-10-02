@@ -1,0 +1,20 @@
+.coki-impresiones {
+  color: var(--color-tinta);
+  background-color: var(--color-superficie);
+  border: var(--borde);
+  border-radius: var(--radio-lg);
+  box-shadow: var(--sombra-dura);
+}
+
+.coki-impresiones .form-label {
+  font-weight: 700;
+  color: var(--color-texto-suave);
+}
+
+.coki-impresiones .form-control,
+.coki-impresiones .form-select {
+  color: var(--color-texto);
+  background-color: #fff;
+  border: var(--borde);
+  box-shadow: var(--sombra-dura-sm);
+}

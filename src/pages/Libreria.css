@@ -1,0 +1,43 @@
+.coki-libreria {
+  color: var(--color-tinta);
+  background-color: var(--color-superficie);
+  border: var(--borde);
+  border-radius: var(--radio-lg);
+  box-shadow: var(--sombra-dura);
+}
+
+.coki-libreria .form-control {
+  color: var(--color-texto);
+  background-color: #fff;
+  border: var(--borde);
+  box-shadow: var(--sombra-dura-sm);
+}
+
+.coki-libreria__contador {
+  color: var(--color-texto-suave);
+}
+
+.coki-libreria__vacio {
+  color: var(--color-texto-suave);
+  background-color: var(--color-superficie-alt);
+  border: var(--borde);
+  border-radius: var(--radio-md);
+}
+
+.coki-paginacion {
+  --bs-pagination-color: var(--color-tinta);
+  --bs-pagination-border-width: 2px;
+  --bs-pagination-border-color: var(--color-borde);
+  --bs-pagination-active-bg: var(--color-primario);
+  --bs-pagination-active-border-color: var(--color-borde);
+  --bs-pagination-hover-color: var(--color-tinta);
+  font-weight: 800;
+}
+
+.coki-aviso {
+  --bs-toast-border-width: 2px;
+  --bs-toast-border-color: var(--color-borde);
+  --bs-toast-box-shadow: var(--sombra-dura);
+  --bs-toast-bg: var(--color-superficie-alt);
+  color: var(--color-tinta);
+}
