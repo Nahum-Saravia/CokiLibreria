@@ -1,6 +1,6 @@
-import Navbar from './components/Navbar';
-import Footer from './components/Footer';
-import Rutas from './routes/Rutas';
+import Navbar from './components/Navbar/Navbar';
+import Footer from './components/Footer/Footer';
+import Rutas from './components/routes/Rutas';
 
 function App() {
   return (
