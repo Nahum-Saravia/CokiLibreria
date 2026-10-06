@@ -13,7 +13,7 @@ function leerCarrito() {
 
   try {
     return JSON.parse(guardado);
-  } catch (error) {
+  } catch {
     localStorage.removeItem(CLAVE_CARRITO);
     return [];
   }
@@ -28,13 +28,9 @@ function formatearPrecio(precio) {
 }
 
 function CartPanel({ abierto, onCerrar, onCarritoActualizado }) {
-  const [carrito, setCarrito] = useState([]);
+  const [carrito, setCarrito] = useState(leerCarrito);
   const [mostrarConfirmacion, setMostrarConfirmacion] = useState(false);
   const [cantidades, setCantidades] = useState({});
-
-  useEffect(() => {
-    setCarrito(leerCarrito());
-  }, [abierto]);
 
   useEffect(() => {
     const actualizarCarrito = () => {
