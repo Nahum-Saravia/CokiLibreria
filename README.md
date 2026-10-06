@@ -85,7 +85,7 @@ Otros comandos:
 
 ## Páginas y rutas
 
-La navegación se maneja con **React Router**. Todas las rutas están definidas en `src/routes/Rutas.jsx`.
+La navegación se maneja con **React Router**. Todas las rutas están definidas en `src/components/routes/Rutas.jsx`.
 
 | Ruta | Página | Contenido |
 |---|---|---|
@@ -111,10 +111,14 @@ CokiLibreria/
 │   └── coki-logo.png
 ├── src/
 │   ├── assets/img/      → imágenes del sitio
-│   ├── components/      → componentes reutilizables (Navbar, Footer, cards, carrito)
+│   ├── components/      → componentes reutilizables, cada uno en su carpeta
+│   │   ├── Card/        → CategoryCard y ProductCard
+│   │   ├── Cart/        → CartIcon y CartPanel
+│   │   ├── Footer/      → Footer
+│   │   ├── Navbar/      → Navbar
+│   │   └── routes/      → configuración de las rutas (Rutas.jsx)
 │   ├── data/            → datos que se muestran en el sitio (productos, categorías, secciones)
 │   ├── pages/           → una página por cada vista del sitio
-│   ├── routes/          → configuración de las rutas (Rutas.jsx)
 │   ├── App.jsx          → estructura general: Navbar + rutas + Footer
 │   ├── index.css        → variables globales
 │   └── main.jsx         → punto de entrada de la aplicación
@@ -128,16 +132,17 @@ CokiLibreria/
 
 ## Componentes, props y map()
 
-La interfaz está dividida en **componentes reutilizables**, ubicados en `src/components/`:
+La interfaz está dividida en **componentes reutilizables**, ubicados en `src/components/` y agrupados en carpetas. Cada componente tiene junto a él su archivo `.css`, si lo necesita:
 
-| Componente | Uso |
-|---|---|
-| `Navbar` | Barra de navegación con menú para celular, sesión y carrito |
-| `Footer` | Pie de página con contacto y ubicación |
-| `CategoryCard` | Tarjeta de categoría del inicio |
-| `ProductCard` | Tarjeta de producto de la librería |
-| `CartIcon` | Ícono del carrito con la cantidad de productos |
-| `CartPanel` | Panel lateral del carrito |
+| Componente | Carpeta | Uso |
+|---|---|---|
+| `Navbar` | `Navbar/` | Barra de navegación con menú para celular, sesión y carrito |
+| `Footer` | `Footer/` | Pie de página con contacto y ubicación |
+| `CategoryCard` | `Card/` | Tarjeta de categoría del inicio |
+| `ProductCard` | `Card/` | Tarjeta de producto de la librería |
+| `CartIcon` | `Cart/` | Ícono del carrito con la cantidad de productos |
+| `CartPanel` | `Cart/` | Panel lateral del carrito |
+| `Rutas` | `routes/` | Rutas de la aplicación con React Router |
 
 Los componentes reciben la información mediante **props**, lo que permite reutilizarlos con distintos datos. Por ejemplo, la misma `CategoryCard` se usa para las tres categorías del inicio:
 

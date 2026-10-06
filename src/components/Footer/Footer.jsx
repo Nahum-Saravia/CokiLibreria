@@ -1,8 +1,8 @@
 import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
-import contacto from '../data/contacto';
-import logo from '../assets/img/coki-logo.png';
+import contacto from '../../data/contacto';
+import logo from '../../assets/img/coki-logo.png';
 import './Footer.css';
 
 function Footer() {
