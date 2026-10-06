@@ -9,7 +9,7 @@ import Button from 'react-bootstrap/Button';
 import Pagination from 'react-bootstrap/Pagination';
 import Toast from 'react-bootstrap/Toast';
 import ToastContainer from 'react-bootstrap/ToastContainer';
-import ProductCard from '../components/ProductCard';
+import ProductCard from '../components/Card/ProductCard';
 import productos from '../data/productos';
 import './Libreria.css';
 

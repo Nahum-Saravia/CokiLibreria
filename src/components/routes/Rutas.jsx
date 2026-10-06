@@ -1,11 +1,11 @@
 import { Routes, Route } from "react-router-dom";
-import Home from "../pages/Home";
-import Libreria from "../pages/Libreria";
-import Impresiones from "../pages/Impresiones";
-import Sesion from "../pages/Sesion";
-import ConsultarPedido from "../pages/ConsultarPedido";
-import PanelAdmin from "../pages/PanelAdmin";
-import NotFound from "../pages/NotFound";
+import Home from "../../pages/Home";
+import Libreria from "../../pages/Libreria";
+import Impresiones from "../../pages/Impresiones";
+import Sesion from "../../pages/Sesion";
+import ConsultarPedido from "../../pages/ConsultarPedido";
+import PanelAdmin from "../../pages/PanelAdmin";
+import NotFound from "../../pages/NotFound";
 
 function Rutas() {
   return (

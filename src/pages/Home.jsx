@@ -1,7 +1,7 @@
 import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
-import CategoryCard from '../components/CategoryCard';
+import CategoryCard from '../components/Card/CategoryCard';
 import categorias from '../data/categorias';
 
 function Home() {

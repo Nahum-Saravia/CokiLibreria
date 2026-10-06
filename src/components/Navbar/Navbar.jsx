@@ -7,12 +7,12 @@ import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Button from 'react-bootstrap/Button';
-import CartIcon from './CartIcon';
-import secciones from '../data/secciones';
-import logo from '../assets/img/coki-logo.png';
-import casa from '../assets/img/casa.png';
+import CartIcon from '../Cart/CartIcon';
+import secciones from '../../data/secciones';
+import logo from '../../assets/img/coki-logo.png';
+import casa from '../../assets/img/casa.png';
 import './Navbar.css';
-import CartPanel from './CartPanel';
+import CartPanel from '../Cart/CartPanel';
 
 function Navbar() {
   const navigate = useNavigate();
