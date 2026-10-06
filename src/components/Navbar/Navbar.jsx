@@ -51,7 +51,7 @@ function Navbar() {
         (total, item) => total + Number(item.cantidad || 0),
         0
       );
-    } catch (error) {
+    } catch {
       return 0;
     }
   };
