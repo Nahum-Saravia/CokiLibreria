@@ -184,6 +184,10 @@
   background-color: #a9d8e8;
 }
 
+.admin-status--entregado {
+  background-color: #d9d3ee;
+}
+
 .admin-table-button {
   background-color: var(--color-superficie-alt);
   border: var(--borde);
@@ -199,6 +203,33 @@
   background-color: #fff !important;
   border-color: var(--color-borde) !important;
   color: var(--color-tinta) !important;
+}
+
+.admin-modal {
+  background-color: var(--color-superficie);
+  border: var(--borde);
+  border-radius: var(--radio-lg);
+  box-shadow: var(--sombra-dura);
+  color: var(--color-tinta);
+}
+
+.admin-modal .modal-header,
+.admin-modal .modal-footer {
+  border-color: rgba(47, 42, 86, 0.15);
+}
+
+.admin-modal .form-select {
+  background-color: var(--color-superficie-alt);
+  border: var(--borde);
+  border-radius: var(--radio-md);
+}
+
+.admin-modal__dato {
+  margin: 0;
+  color: var(--color-texto-suave);
+  font-size: 0.85rem;
+  font-weight: 700;
+  text-transform: uppercase;
 }
 
 .admin-stock-grid {
