@@ -7,16 +7,36 @@ import {
   Form,
   Button,
   Table,
-  Modal
+  Modal,
+  ButtonGroup,
+  InputGroup
 } from 'react-bootstrap';
 import './PanelAdmin.css';
 import { useEffect, useState } from 'react';
+import Swal from 'sweetalert2';
+import productosIniciales from '../data/productos';
+
+const STOCK_BAJO = 5;
+
+const categorias = [...new Set(productosIniciales.map((producto) => producto.categoria))];
+
+const TAMANIO_MAXIMO_IMAGEN = 1024 * 1024;
+
+const productoVacio = {
+  nombre: '',
+  categoria: '',
+  precio: '',
+  stock: '',
+  descripcion: '',
+  imagen: ''
+};
 
 const estadosPedido = [
   { valor: 'Pendiente', texto: 'Pendiente', clase: 'pendiente' },
   { valor: 'En preparación', texto: 'En preparación', clase: 'preparacion' },
   { valor: 'Listo', texto: 'Listo para retirar', clase: 'listo' },
-  { valor: 'Entregado', texto: 'Entregado', clase: 'entregado' }
+  { valor: 'Entregado', texto: 'Entregado', clase: 'entregado' },
+  { valor: 'Cancelado', texto: 'Cancelado', clase: 'cancelado' }
 ];
 
 function claseEstado(estado) {
@@ -25,6 +45,39 @@ function claseEstado(estado) {
 
 function formatearPrecio(precio) {
   return `$${precio.toLocaleString('es-AR')}`;
+}
+
+const periodosVentas = [
+  { valor: 'dia', texto: 'Día', detalle: 'hoy' },
+  { valor: 'semana', texto: 'Semana', detalle: 'esta semana' },
+  { valor: 'mes', texto: 'Mes', detalle: 'este mes' }
+];
+
+function convertirFecha(texto) {
+  const [dia, mes, anio] = texto.split('/').map(Number);
+  return new Date(anio, mes - 1, dia);
+}
+
+function esDelPeriodo(fechaTexto, periodo) {
+  const fecha = convertirFecha(fechaTexto);
+  const hoy = new Date();
+  hoy.setHours(0, 0, 0, 0);
+
+  if (periodo === 'dia') {
+    return fecha.getTime() === hoy.getTime();
+  }
+
+  if (periodo === 'mes') {
+    return (
+      fecha.getMonth() === hoy.getMonth() &&
+      fecha.getFullYear() === hoy.getFullYear()
+    );
+  }
+
+  const inicioSemana = new Date(hoy);
+  inicioSemana.setDate(hoy.getDate() - ((hoy.getDay() + 6) % 7));
+
+  return fecha >= inicioSemana && fecha <= hoy;
 }
 
 function calcularTotal(pedido) {
@@ -88,6 +141,18 @@ const pedidosIniciales = [
       { producto: 'Carpeta N°3 con anillos', cantidad: 1, precioUnitario: 2400 }
     ],
     notas: ''
+  },
+  {
+    retiro: '#1044',
+    cliente: 'Valentina Ruiz',
+    telefono: '381 498-3125',
+    fecha: '05/10/2026',
+    detalle: 'Impresión de apuntes',
+    estado: 'Cancelado',
+    items: [
+      { producto: 'Impresión A4 blanco y negro', cantidad: 40, precioUnitario: 90 }
+    ],
+    notas: 'No retiró el pedido.'
   }
 ];
 
@@ -99,6 +164,14 @@ function PanelAdmin() {
   const [pedidoAVer, setPedidoAVer] = useState(null);
   const [pedidoAGestionar, setPedidoAGestionar] = useState(null);
   const [nuevoEstado, setNuevoEstado] = useState('');
+  const [periodoVentas, setPeriodoVentas] = useState('dia');
+  const [productos, setProductos] = useState(productosIniciales);
+  const [busquedaProducto, setBusquedaProducto] = useState('');
+  const [categoriaFiltro, setCategoriaFiltro] = useState('todas');
+  const [productoAActualizar, setProductoAActualizar] = useState(null);
+  const [nuevoStock, setNuevoStock] = useState('');
+  const [mostrarAgregar, setMostrarAgregar] = useState(false);
+  const [productoNuevo, setProductoNuevo] = useState(productoVacio);
 
   useEffect(() => {
     const tipoUsuario = localStorage.getItem('tipoUsuario');
@@ -110,8 +183,38 @@ function PanelAdmin() {
 
   const hayEntregados = pedidos.some((pedido) => pedido.estado === 'Entregado');
 
+  const avisarSinPedidos = (tipo) => {
+    Swal.fire({
+      icon: 'info',
+      title: `No hay pedidos ${tipo}`,
+      text: `No hay pedidos ${tipo} para eliminar.`,
+      confirmButtonText: 'Entendido',
+      buttonsStyling: false,
+      customClass: {
+        popup: 'admin-alerta',
+        confirmButton: 'admin-primary-button'
+      }
+    });
+  };
+
   const eliminarEntregados = () => {
+    if (!hayEntregados) {
+      avisarSinPedidos('entregados');
+      return;
+    }
+
     setPedidos(pedidos.filter((pedido) => pedido.estado !== 'Entregado'));
+  };
+
+  const hayCancelados = pedidos.some((pedido) => pedido.estado === 'Cancelado');
+
+  const eliminarCancelados = () => {
+    if (!hayCancelados) {
+      avisarSinPedidos('cancelados');
+      return;
+    }
+
+    setPedidos(pedidos.filter((pedido) => pedido.estado !== 'Cancelado'));
   };
 
   const abrirGestion = (pedido) => {
@@ -143,26 +246,126 @@ function PanelAdmin() {
     return coincideEstado && coincideBusqueda;
   });
 
-  const productos = [
-    {
-      nombre: 'Cuaderno ABC tapa dura',
-      categoria: 'Útiles escolares',
-      stock: '24 unidades',
-      clase: 'stock-ok'
-    },
-    {
-      nombre: 'Resma A4 80g',
-      categoria: 'Impresiones',
-      stock: '3 unidades',
-      clase: 'stock-low'
-    },
-    {
-      nombre: 'Lapicera azul',
-      categoria: 'Útiles escolares',
-      stock: '56 unidades',
-      clase: 'stock-ok'
+  const pedidosPendientes = pedidos.filter(
+    (pedido) => pedido.estado === 'Pendiente'
+  ).length;
+
+  const periodoActual = periodosVentas.find(
+    (periodo) => periodo.valor === periodoVentas
+  );
+
+  const pedidosDelPeriodo = pedidos.filter(
+    (pedido) =>
+      pedido.estado !== 'Cancelado' && esDelPeriodo(pedido.fecha, periodoVentas)
+  );
+
+  const ventasDelPeriodo = pedidosDelPeriodo.reduce(
+    (total, pedido) => total + calcularTotal(pedido),
+    0
+  );
+
+  const productosConPocoStock = productos.filter(
+    (producto) => producto.stock <= STOCK_BAJO
+  ).length;
+
+  const textoBuscado = normalizar(busquedaProducto.trim());
+
+  const productosFiltrados = productos.filter((producto) => {
+    const coincideCategoria =
+      categoriaFiltro === 'todas' || producto.categoria === categoriaFiltro;
+
+    const coincideNombre = normalizar(producto.nombre).includes(textoBuscado);
+
+    return coincideCategoria && coincideNombre;
+  });
+
+  const abrirActualizarStock = (producto) => {
+    setProductoAActualizar(producto);
+    setNuevoStock(String(producto.stock));
+  };
+
+  const guardarStock = () => {
+    setProductos(
+      productos.map((producto) =>
+        producto.id === productoAActualizar.id
+          ? { ...producto, stock: Number(nuevoStock) }
+          : producto
+      )
+    );
+    setProductoAActualizar(null);
+  };
+
+  const stockValido = nuevoStock !== '' && Number(nuevoStock) >= 0;
+
+  const abrirAgregarProducto = () => {
+    setProductoNuevo({ ...productoVacio, categoria: categorias[0] });
+    setMostrarAgregar(true);
+  };
+
+  const cambiarProductoNuevo = (evento) => {
+    setProductoNuevo({
+      ...productoNuevo,
+      [evento.target.name]: evento.target.value
+    });
+  };
+
+  const cambiarImagen = (evento) => {
+    const archivo = evento.target.files[0];
+
+    if (!archivo) {
+      return;
     }
-  ];
+
+    if (archivo.size > TAMANIO_MAXIMO_IMAGEN) {
+      evento.target.value = '';
+      Swal.fire({
+        icon: 'warning',
+        title: 'La imagen es muy pesada',
+        text: 'Elegí una imagen de hasta 1 MB.',
+        confirmButtonText: 'Entendido',
+        buttonsStyling: false,
+        customClass: {
+          popup: 'admin-alerta',
+          confirmButton: 'admin-primary-button'
+        }
+      });
+      return;
+    }
+
+    const lector = new FileReader();
+
+    lector.onload = () => {
+      setProductoNuevo((anterior) => ({ ...anterior, imagen: lector.result }));
+    };
+
+    lector.readAsDataURL(archivo);
+  };
+
+  const productoNuevoValido =
+    productoNuevo.nombre.trim() !== '' &&
+    Number(productoNuevo.precio) > 0 &&
+    productoNuevo.stock !== '' &&
+    Number(productoNuevo.stock) >= 0 &&
+    productoNuevo.descripcion.trim() !== '' &&
+    productoNuevo.imagen !== '';
+
+  const guardarProductoNuevo = () => {
+    const nuevoId = Math.max(0, ...productos.map((producto) => producto.id)) + 1;
+
+    setProductos([
+      ...productos,
+      {
+        id: nuevoId,
+        nombre: productoNuevo.nombre.trim(),
+        categoria: productoNuevo.categoria,
+        precio: Number(productoNuevo.precio),
+        stock: Number(productoNuevo.stock),
+        imagen: productoNuevo.imagen,
+        descripcion: productoNuevo.descripcion.trim()
+      }
+    ]);
+    setMostrarAgregar(false);
+  };
 
   const cerrarSesion = () => {
     localStorage.removeItem('tipoUsuario');
@@ -179,30 +382,47 @@ function PanelAdmin() {
 
         <Row className="g-3 mb-4">
           <Col xs={12} sm={4}>
-            <Card className="admin-stat-card">
+            <Card className="admin-stat-card h-100">
               <Card.Body>
                 <span>Pedidos pendientes</span>
-                <strong>12</strong>
+                <strong>{pedidosPendientes}</strong>
                 <small>Requieren atención</small>
               </Card.Body>
             </Card>
           </Col>
 
           <Col xs={12} sm={4}>
-            <Card className="admin-stat-card">
+            <Card className="admin-stat-card h-100">
               <Card.Body>
-                <span>Ventas del día</span>
-                <strong>$48.750</strong>
-                <small>+8% respecto a ayer</small>
+                <div className="d-flex flex-wrap justify-content-between align-items-center gap-2">
+                  <span>Ventas</span>
+                  <ButtonGroup size="sm" aria-label="Período de ventas">
+                    {periodosVentas.map((periodo) => (
+                      <Button
+                        key={periodo.valor}
+                        type="button"
+                        className="admin-periodo"
+                        active={periodoVentas === periodo.valor}
+                        onClick={() => setPeriodoVentas(periodo.valor)}
+                      >
+                        {periodo.texto}
+                      </Button>
+                    ))}
+                  </ButtonGroup>
+                </div>
+                <strong>{formatearPrecio(ventasDelPeriodo)}</strong>
+                <small>
+                  {pedidosDelPeriodo.length} {pedidosDelPeriodo.length === 1 ? 'pedido' : 'pedidos'} {periodoActual.detalle}
+                </small>
               </Card.Body>
             </Card>
           </Col>
 
           <Col xs={12} sm={4}>
-            <Card className="admin-stat-card">
+            <Card className="admin-stat-card h-100">
               <Card.Body>
                 <span>Productos con poco stock</span>
-                <strong>7</strong>
+                <strong>{productosConPocoStock}</strong>
                 <small>Para reponer</small>
               </Card.Body>
             </Card>
@@ -217,14 +437,22 @@ function PanelAdmin() {
                 <h2>Estado de pedidos</h2>
               </div>
 
-              <Button
-                type="button"
-                className="admin-primary-button"
-                onClick={eliminarEntregados}
-                disabled={!hayEntregados}
-              >
-                Eliminar entregados
-              </Button>
+              <div className="d-flex flex-wrap gap-2">
+                <Button
+                  type="button"
+                  className="admin-primary-button"
+                  onClick={eliminarEntregados}
+                >
+                  Eliminar entregados
+                </Button>
+                <Button
+                  type="button"
+                  className="admin-primary-button"
+                  onClick={eliminarCancelados}
+                >
+                  Eliminar cancelados
+                </Button>
+              </div>
             </div>
 
             <Row className="g-3 admin-filters">
@@ -327,7 +555,11 @@ function PanelAdmin() {
                 <h2>Stock de librería</h2>
               </div>
 
-              <Button className="admin-primary-button">
+              <Button
+                type="button"
+                className="admin-primary-button"
+                onClick={abrirAgregarProducto}
+              >
                 Agregar producto
               </Button>
             </div>
@@ -339,6 +571,8 @@ function PanelAdmin() {
                   <Form.Control
                     type="search"
                     placeholder="Nombre del producto"
+                    value={busquedaProducto}
+                    onChange={(evento) => setBusquedaProducto(evento.target.value)}
                   />
                 </Form.Group>
               </Col>
@@ -346,29 +580,41 @@ function PanelAdmin() {
               <Col xs={12} md={6}>
                 <Form.Group controlId="categoria">
                   <Form.Label>Categoría</Form.Label>
-                  <Form.Select>
-                    <option>Todas las categorías</option>
-                    <option>Útiles escolares</option>
-                    <option>Cuadernos</option>
-                    <option>Impresiones</option>
+                  <Form.Select
+                    value={categoriaFiltro}
+                    onChange={(evento) => setCategoriaFiltro(evento.target.value)}
+                  >
+                    <option value="todas">Todas las categorías</option>
+                    {categorias.map((categoria) => (
+                      <option key={categoria} value={categoria}>
+                        {categoria}
+                      </option>
+                    ))}
                   </Form.Select>
                 </Form.Group>
               </Col>
             </Row>
 
+            {productosFiltrados.length === 0 && (
+              <p className="text-center fw-bold py-3 m-0">
+                No se encontraron productos.
+              </p>
+            )}
+
             <Row className="g-3 admin-stock-grid">
-              {productos.map((producto) => (
-                <Col xs={12} md={4} key={producto.nombre}>
+              {productosFiltrados.map((producto) => (
+                <Col xs={12} md={6} lg={4} key={producto.id}>
                   <article className="admin-product">
                     <strong>{producto.nombre}</strong>
                     <span>{producto.categoria}</span>
-                    <b className={producto.clase}>
-                      {producto.stock}
+                    <b className={producto.stock <= STOCK_BAJO ? 'stock-low' : 'stock-ok'}>
+                      {producto.stock} {producto.stock === 1 ? 'unidad' : 'unidades'}
                     </b>
 
                     <Button
                       type="button"
                       className="admin-table-button"
+                      onClick={() => abrirActualizarStock(producto)}
                     >
                       Actualizar stock
                     </Button>
@@ -517,6 +763,185 @@ function PanelAdmin() {
             </Modal.Footer>
           </>
         )}
+      </Modal>
+
+      <Modal
+        show={productoAActualizar !== null}
+        onHide={() => setProductoAActualizar(null)}
+        centered
+        contentClassName="admin-modal"
+      >
+        {productoAActualizar && (
+          <>
+            <Modal.Header closeButton>
+              <Modal.Title as="h2" className="h4 fw-bold m-0">
+                Actualizar stock
+              </Modal.Title>
+            </Modal.Header>
+
+            <Modal.Body>
+              <p className="mb-3">
+                Producto: <strong>{productoAActualizar.nombre}</strong>
+              </p>
+
+              <Form.Group controlId="nuevoStock">
+                <Form.Label className="fw-bold">Unidades en stock</Form.Label>
+                <Form.Control
+                  type="number"
+                  min="0"
+                  value={nuevoStock}
+                  onChange={(evento) => setNuevoStock(evento.target.value)}
+                />
+              </Form.Group>
+            </Modal.Body>
+
+            <Modal.Footer>
+              <Button
+                type="button"
+                className="admin-table-button"
+                onClick={() => setProductoAActualizar(null)}
+              >
+                Cancelar
+              </Button>
+              <Button
+                type="button"
+                className="admin-primary-button"
+                onClick={guardarStock}
+                disabled={!stockValido}
+              >
+                Guardar stock
+              </Button>
+            </Modal.Footer>
+          </>
+        )}
+      </Modal>
+
+      <Modal
+        show={mostrarAgregar}
+        onHide={() => setMostrarAgregar(false)}
+        centered
+        contentClassName="admin-modal"
+      >
+        <Modal.Header closeButton>
+          <Modal.Title as="h2" className="h4 fw-bold m-0">
+            Agregar producto
+          </Modal.Title>
+        </Modal.Header>
+
+        <Modal.Body>
+          <Row className="g-3">
+            <Col xs={12}>
+              <Form.Group controlId="nombreProducto">
+                <Form.Label className="fw-bold">Nombre</Form.Label>
+                <Form.Control
+                  type="text"
+                  name="nombre"
+                  placeholder="Ej: Regla 30 cm"
+                  value={productoNuevo.nombre}
+                  onChange={cambiarProductoNuevo}
+                />
+              </Form.Group>
+            </Col>
+
+            <Col xs={12}>
+              <Form.Group controlId="categoriaProducto">
+                <Form.Label className="fw-bold">Categoría</Form.Label>
+                <Form.Select
+                  name="categoria"
+                  value={productoNuevo.categoria}
+                  onChange={cambiarProductoNuevo}
+                >
+                  {categorias.map((categoria) => (
+                    <option key={categoria} value={categoria}>
+                      {categoria}
+                    </option>
+                  ))}
+                </Form.Select>
+              </Form.Group>
+            </Col>
+
+            <Col xs={6}>
+              <Form.Group controlId="precioProducto">
+                <Form.Label className="fw-bold">Precio</Form.Label>
+                <InputGroup>
+                  <InputGroup.Text className="admin-modal__prefijo">$</InputGroup.Text>
+                  <Form.Control
+                    type="number"
+                    min="0"
+                    name="precio"
+                    value={productoNuevo.precio}
+                    onChange={cambiarProductoNuevo}
+                  />
+                </InputGroup>
+              </Form.Group>
+            </Col>
+
+            <Col xs={6}>
+              <Form.Group controlId="stockProducto">
+                <Form.Label className="fw-bold">Stock</Form.Label>
+                <Form.Control
+                  type="number"
+                  min="0"
+                  name="stock"
+                  value={productoNuevo.stock}
+                  onChange={cambiarProductoNuevo}
+                />
+              </Form.Group>
+            </Col>
+
+            <Col xs={12}>
+              <Form.Group controlId="descripcionProducto">
+                <Form.Label className="fw-bold">Descripción</Form.Label>
+                <Form.Control
+                  as="textarea"
+                  rows={2}
+                  name="descripcion"
+                  placeholder="Ej: Regla de plástico transparente con graduación en cm."
+                  value={productoNuevo.descripcion}
+                  onChange={cambiarProductoNuevo}
+                />
+              </Form.Group>
+            </Col>
+
+            <Col xs={12}>
+              <Form.Group controlId="imagenProducto">
+                <Form.Label className="fw-bold">Imagen</Form.Label>
+                <Form.Control
+                  type="file"
+                  accept="image/*"
+                  onChange={cambiarImagen}
+                />
+                <Form.Text>Formato JPG o PNG, de hasta 1 MB.</Form.Text>
+              </Form.Group>
+
+              {productoNuevo.imagen && (
+                <img
+                  src={productoNuevo.imagen}
+                  alt="Vista previa del producto"
+                  className="admin-modal__preview mt-2"
+                />
+              )}
+            </Col>
+          </Row>
+        </Modal.Body>
+
+        <Modal.Footer>
+          <Button
+            type="button"
+            className="admin-table-button"
+            onClick={() => setMostrarAgregar(false)}
+          >
+            Cancelar
+          </Button>
+          <Button
+            type="button"
+            className="admin-primary-button"
+            onClick={guardarProductoNuevo}
+            disabled={!productoNuevoValido}
+          >
+            Agregar
+          </Button>
+        </Modal.Footer>
       </Modal>
     </main>
   );
