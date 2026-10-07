@@ -60,6 +60,22 @@
   font-weight: 600;
 }
 
+.admin-stat-card .admin-periodo {
+  padding: 0.1rem 0.5rem;
+  font-size: 0.75rem;
+  font-weight: 800;
+  color: var(--color-tinta);
+  background-color: var(--color-superficie-alt);
+  border: 2px solid var(--color-borde);
+}
+
+.admin-stat-card .admin-periodo:hover,
+.admin-stat-card .admin-periodo.active {
+  color: #fff;
+  background-color: var(--color-primario);
+  border-color: var(--color-borde);
+}
+
 .admin-section-card .card-body {
   padding: var(--esp-lg);
 }
@@ -83,6 +99,10 @@
 }
 
 .admin-primary-button {
+  --bs-btn-disabled-color: #fff;
+  --bs-btn-disabled-bg: var(--color-primario);
+  --bs-btn-disabled-border-color: var(--color-borde);
+  --bs-btn-disabled-opacity: 0.5;
   display: inline-block;
   background-color: var(--color-primario);
   border: var(--borde);
@@ -188,6 +208,10 @@
   background-color: #d9d3ee;
 }
 
+.admin-status--cancelado {
+  background-color: #f2b8b5;
+}
+
 .admin-table-button {
   background-color: var(--color-superficie-alt);
   border: var(--borde);
@@ -218,8 +242,47 @@
   border-color: rgba(47, 42, 86, 0.15);
 }
 
-.admin-modal .form-select {
+.admin-modal .form-select,
+.admin-modal .form-control {
   background-color: var(--color-superficie-alt);
+  border: var(--borde);
+  border-radius: var(--radio-md);
+}
+
+.admin-alerta {
+  font-family: var(--fuente-texto);
+  color: var(--color-tinta);
+  background-color: var(--color-superficie);
+  border: var(--borde);
+  border-radius: var(--radio-lg);
+  box-shadow: var(--sombra-dura);
+}
+
+.admin-alerta .swal2-title {
+  font-family: var(--fuente-titulos);
+  color: var(--color-tinta);
+}
+
+.admin-modal__prefijo {
+  font-weight: 800;
+  color: var(--color-tinta);
+  background-color: var(--color-superficie);
+  border: var(--borde);
+  border-radius: var(--radio-md) 0 0 var(--radio-md);
+}
+
+.admin-modal .input-group .form-control {
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+}
+
+.admin-modal__preview {
+  display: block;
+  max-height: 120px;
+  max-width: 100%;
+  object-fit: contain;
+  padding: var(--esp-xs);
+  background-color: #fff;
   border: var(--borde);
   border-radius: var(--radio-md);
 }
