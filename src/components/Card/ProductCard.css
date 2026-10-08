@@ -45,3 +45,51 @@
   font-family: var(--fuente-titulos);
   color: var(--color-primario-oscuro);
 }
+
+.coki-product-card__cantidad {
+  border: var(--borde);
+  border-radius: var(--radio-md);
+  overflow: hidden;
+  background-color: #fde3ef;
+}
+
+.coki-product-card__cantidad button {
+  width: 2rem;
+  height: 2.25rem;
+  border: 0;
+  font-weight: 800;
+  color: var(--color-tinta);
+  background-color: #f9c8de;
+}
+
+.coki-product-card__cantidad button:hover:not(:disabled) {
+  background-color: var(--color-primario);
+  color: #fff;
+}
+
+.coki-product-card__cantidad button:disabled {
+  opacity: 0.45;
+}
+
+.coki-product-card__cantidad input {
+  width: 2.75rem;
+  height: 2.25rem;
+  border: 0;
+  border-inline: 2px solid var(--color-borde);
+  text-align: center;
+  font-weight: 800;
+  color: var(--color-primario-oscuro);
+  background-color: #fde3ef;
+  -moz-appearance: textfield;
+}
+
+.coki-product-card__cantidad input:focus {
+  outline: none;
+  background-color: #fff;
+}
+
+.coki-product-card__cantidad input::-webkit-outer-spin-button,
+.coki-product-card__cantidad input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
