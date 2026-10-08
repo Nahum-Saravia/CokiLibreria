@@ -249,20 +249,6 @@
   border-radius: var(--radio-md);
 }
 
-.admin-alerta {
-  font-family: var(--fuente-texto);
-  color: var(--color-tinta);
-  background-color: var(--color-superficie);
-  border: var(--borde);
-  border-radius: var(--radio-lg);
-  box-shadow: var(--sombra-dura);
-}
-
-.admin-alerta .swal2-title {
-  font-family: var(--fuente-titulos);
-  color: var(--color-tinta);
-}
-
 .admin-modal__prefijo {
   font-weight: 800;
   color: var(--color-tinta);

@@ -215,15 +215,17 @@ function Navbar() {
                     </Nav.Link>
                   ))}
 
-                  <Button
-                    type="button"
-                    variant="link"
-                    aria-label="Ver carrito"
-                    className="d-inline-flex text-reset rounded-pill px-3 coki-navbar__carrito"
-                    onClick={() => setCarritoAbierto(true)}
-                  >
-                    <CartIcon cantidad={cantidadCarrito} />
-                  </Button>
+                  {!esAdmin && (
+                    <Button
+                      type="button"
+                      variant="link"
+                      aria-label="Ver carrito"
+                      className="d-inline-flex text-reset rounded-pill px-3 coki-navbar__carrito"
+                      onClick={() => setCarritoAbierto(true)}
+                    >
+                      <CartIcon cantidad={cantidadCarrito} />
+                    </Button>
+                  )}
                 </Nav>
 
                 <Nav
@@ -298,25 +300,29 @@ function Navbar() {
                     </Nav.Link>
                   )}
 
-                  <Button
-                    type="button"
-                    variant="link"
-                    onClick={() => setCarritoAbierto(true)}
-                    className="d-flex align-items-center gap-3 fw-bold text-reset text-decoration-none px-3 rounded-3 coki-offcanvas__carrito"
-                  >
-                    <CartIcon cantidad={cantidadCarrito} />
-                    Carrito
-                  </Button>
+                  {!esAdmin && (
+                    <Button
+                      type="button"
+                      variant="link"
+                      onClick={() => setCarritoAbierto(true)}
+                      className="d-flex align-items-center gap-3 fw-bold text-reset text-decoration-none px-3 rounded-3 coki-offcanvas__carrito"
+                    >
+                      <CartIcon cantidad={cantidadCarrito} />
+                      Carrito
+                    </Button>
+                  )}
                 </Nav>
               </Offcanvas.Body>
             </BsNavbar.Offcanvas>
           </Col>
         </Row>
       </Container>
-      <CartPanel
-        abierto={carritoAbierto}
-        onCerrar={() => setCarritoAbierto(false)}
-      />
+      {!esAdmin && (
+        <CartPanel
+          abierto={carritoAbierto}
+          onCerrar={() => setCarritoAbierto(false)}
+        />
+      )}
     </BsNavbar>
   );
 }
