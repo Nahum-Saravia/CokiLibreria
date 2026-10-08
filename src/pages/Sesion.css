@@ -66,14 +66,12 @@
   border: var(--borde);
   border-radius: var(--radio-md);
   color: var(--color-texto);
-  background-color: #fff !important;
+  background-color: var(--color-superficie-alt);
   font-family: var(--fuente-texto);
   min-height: 44px;
 }
 
 .sesion-input:focus {
-  background-color: #fff !important;
-  color: var(--color-tinta);
   border-color: var(--color-primario);
   box-shadow: 0 0 0 0.2rem rgba(222, 84, 153, 0.2);
 }
@@ -201,3 +199,14 @@
   border-radius: 4px;
 }
 
+.sesion-input {
+  background-color: #fff !important;
+  color: var(--color-tinta);
+}
+
+.sesion-input:focus {
+  background-color: #fff !important;
+  color: var(--color-tinta);
+  border-color: var(--color-primario);
+  box-shadow: 0 0 0 0.2rem rgba(222, 84, 153, 0.2);
+}

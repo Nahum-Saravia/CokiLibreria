@@ -10,7 +10,10 @@ import {
 const CLAVE_CARRITO = 'coki-carrito';
 
 function leerCarrito() {
-  const guardado = localStorage.getItem(CLAVE_CARRITO);
+  const guardado =
+    localStorage.getItem(
+      CLAVE_CARRITO
+    );
 
   if (!guardado) {
     return [];
@@ -19,7 +22,9 @@ function leerCarrito() {
   try {
     return JSON.parse(guardado);
   } catch {
-    localStorage.removeItem(CLAVE_CARRITO);
+    localStorage.removeItem(
+      CLAVE_CARRITO
+    );
     return [];
   }
 }
@@ -32,66 +37,115 @@ function guardarCarrito(carrito) {
 }
 
 function formatearPrecio(precio) {
-  return '$ ' + Number(precio).toLocaleString('es-AR');
+  return (
+    '$ ' +
+    Number(precio).toLocaleString(
+      'es-AR'
+    )
+  );
 }
 
 function generarRetiro(pedidos) {
   const numeros = pedidos
     .map((pedido) =>
-      Number(String(pedido.retiro).replace(/\D/g, ''))
+      Number(
+        String(pedido.retiro)
+          .replace(/\D/g, '')
+      )
     )
-    .filter((numero) => Number.isFinite(numero));
+    .filter((numero) =>
+      Number.isFinite(numero)
+    );
 
   const ultimoNumero =
     numeros.length > 0
       ? Math.max(...numeros)
       : 1000;
 
-  return `#${String(ultimoNumero + 1).padStart(4, '0')}`;
+  return `#${String(
+    ultimoNumero + 1
+  ).padStart(4, '0')}`;
 }
 
 function obtenerFechaActual() {
-  const hoy = new Date();
-
-  return hoy.toLocaleDateString('es-AR');
+  return new Date().toLocaleDateString(
+    'es-AR'
+  );
 }
 
-function convertirItemsDelCarrito(carrito) {
-  return carrito.map((item) => ({
-    producto: item.esImpresion
-      ? `Impresión - ${item.tipoImpresion}`
-      : item.nombre,
-    cantidad: Number(item.cantidad),
-    precioUnitario: Number(item.precio) || 0
-  }));
+function convertirItemsDelCarrito(
+  carrito
+) {
+  return carrito.map((item) => {
+    if (item.esImpresion) {
+      return {
+        producto: `Impresión - ${item.tipoImpresion}`,
+        cantidad: Number(
+          item.cantidad
+        ),
+        precioUnitario:
+          Number(item.precio) || 0,
+        esImpresion: true,
+        tipoImpresion:
+          item.tipoImpresion,
+        tipoPapel:
+          item.tipoPapel,
+        descripcion:
+          item.descripcion,
+        archivo:
+          item.archivo,
+        archivoUrl:
+          item.archivoUrl,
+        archivoTipo:
+          item.archivoTipo
+      };
+    }
+
+    return {
+      producto: item.nombre,
+      cantidad: Number(
+        item.cantidad
+      ),
+      precioUnitario:
+        Number(item.precio) || 0,
+      esImpresion: false
+    };
+  });
 }
 
 function obtenerNotas(carrito) {
-  const impresiones = carrito.filter(
-    (item) => item.esImpresion
-  );
+  const impresiones =
+    carrito.filter(
+      (item) =>
+        item.esImpresion
+    );
 
-  if (impresiones.length === 0) {
+  if (
+    impresiones.length === 0
+  ) {
     return '';
   }
 
   return impresiones
-    .map((item, indice) => {
-      return [
+    .map((item, indice) =>
+      [
         `Impresión ${indice + 1}`,
         `Tipo de impresión: ${item.tipoImpresion}`,
         `Tipo de papel: ${item.tipoPapel}`,
+        `Cantidad de copias: ${item.cantidad}`,
         `Descripción: ${item.descripcion}`,
         `Archivo: ${item.archivo}`
-      ].join('\n');
-    })
+      ].join('\n')
+    )
     .join('\n\n');
 }
 
 function obtenerDetalle(carrito) {
   return carrito
     .map((item) => {
-      if (item.esImpresion) {
+      if (
+        item.esImpresion
+      ) {
         return `Impresión (${item.tipoImpresion}) x${item.cantidad}`;
       }
 
@@ -105,15 +159,24 @@ function CartPanel({
   onCerrar,
   onCarritoActualizado
 }) {
-  const [carrito, setCarrito] = useState(leerCarrito);
-  const [mostrarConfirmacion, setMostrarConfirmacion] =
-    useState(false);
-  const [cantidades, setCantidades] = useState({});
+  const [carrito, setCarrito] =
+    useState(leerCarrito);
+
+  const [
+    mostrarConfirmacion,
+    setMostrarConfirmacion
+  ] = useState(false);
+
+  const [cantidades, setCantidades] =
+    useState({});
 
   useEffect(() => {
-    const actualizarCarrito = () => {
-      setCarrito(leerCarrito());
-    };
+    const actualizarCarrito =
+      () => {
+        setCarrito(
+          leerCarrito()
+        );
+      };
 
     window.addEventListener(
       'carritoActualizado',
@@ -139,20 +202,28 @@ function CartPanel({
   }, []);
 
   useEffect(() => {
-    const manejarEscape = (evento) => {
-      if (evento.key !== 'Escape') {
-        return;
-      }
+    const manejarEscape =
+      (evento) => {
+        if (
+          evento.key !==
+          'Escape'
+        ) {
+          return;
+        }
 
-      if (mostrarConfirmacion) {
-        setMostrarConfirmacion(false);
-        return;
-      }
+        if (
+          mostrarConfirmacion
+        ) {
+          setMostrarConfirmacion(
+            false
+          );
+          return;
+        }
 
-      if (abierto) {
-        onCerrar();
-      }
-    };
+        if (abierto) {
+          onCerrar();
+        }
+      };
 
     document.addEventListener(
       'keydown',
@@ -171,178 +242,285 @@ function CartPanel({
     onCerrar
   ]);
 
-  const actualizarCarrito = (nuevoCarrito) => {
-    guardarCarrito(nuevoCarrito);
-    setCarrito(nuevoCarrito);
-
-    window.dispatchEvent(
-      new Event('carritoActualizado')
+  const actualizarCarrito = (
+    nuevoCarrito
+  ) => {
+    guardarCarrito(
+      nuevoCarrito
     );
 
-    if (onCarritoActualizado) {
-      onCarritoActualizado(nuevoCarrito);
+    setCarrito(
+      nuevoCarrito
+    );
+
+    window.dispatchEvent(
+      new Event(
+        'carritoActualizado'
+      )
+    );
+
+    if (
+      onCarritoActualizado
+    ) {
+      onCarritoActualizado(
+        nuevoCarrito
+      );
     }
   };
 
-  const quitarCantidad = (idProducto) => {
-    const cantidadSolicitada = Number(
-      cantidades[idProducto] || 1
-    );
+  const quitarCantidad = (
+    idProducto
+  ) => {
+    const cantidadSolicitada =
+      Number(
+        cantidades[
+          idProducto
+        ] || 1
+      );
 
-    const nuevoCarrito = carrito
-      .map((item) => {
-        if (item.id !== idProducto) {
-          return item;
-        }
+    const nuevoCarrito =
+      carrito
+        .map((item) => {
+          if (
+            item.id !==
+            idProducto
+          ) {
+            return item;
+          }
 
-        const cantidad = Math.max(
-          1,
-          Math.min(
-            cantidadSolicitada,
-            item.cantidad
-          )
+          const cantidad =
+            Math.max(
+              1,
+              Math.min(
+                cantidadSolicitada,
+                item.cantidad
+              )
+            );
+
+          return {
+            ...item,
+            cantidad:
+              item.cantidad -
+              cantidad
+          };
+        })
+        .filter(
+          (item) =>
+            item.cantidad > 0
         );
 
-        return {
-          ...item,
-          cantidad: item.cantidad - cantidad
-        };
-      })
-      .filter((item) => item.cantidad > 0);
-
-    actualizarCarrito(nuevoCarrito);
-  };
-
-  const quitarTodo = (idProducto) => {
-    const nuevoCarrito = carrito.filter(
-      (item) => item.id !== idProducto
+    actualizarCarrito(
+      nuevoCarrito
     );
-
-    actualizarCarrito(nuevoCarrito);
   };
 
-  const borrarCarrito = () => {
-    actualizarCarrito([]);
-    setMostrarConfirmacion(false);
-    setCantidades({});
-  };
+  const quitarTodo = (
+    idProducto
+  ) => {
+    const nuevoCarrito =
+      carrito.filter(
+        (item) =>
+          item.id !==
+          idProducto
+      );
 
-  const confirmarPedido = async () => {
-    if (carrito.length === 0) {
-      return;
-    }
-
-    const tipoUsuario =
-      localStorage.getItem('tipoUsuario');
-
-    if (tipoUsuario !== 'cliente') {
-      await Alerta.fire({
-        icon: 'warning',
-        title: 'Acceso no permitido',
-        text: 'Solo los clientes pueden confirmar pedidos.',
-        confirmButtonText: 'Entendido'
-      });
-
-      return;
-    }
-
-    const resultado = await Alerta.fire({
-      icon: 'question',
-      title: 'Confirmar pedido',
-      text: 'Ingresá tu nombre para confirmar el pedido.',
-      input: 'text',
-      inputLabel: 'Nombre y apellido',
-      inputPlaceholder: 'Ej: Juan Pérez',
-      inputAttributes: {
-        maxlength: '80',
-        autocomplete: 'name'
-      },
-      showCancelButton: true,
-      confirmButtonText: 'Confirmar pedido',
-      cancelButtonText: 'Cancelar',
-      reverseButtons: true,
-      inputValidator: (valor) => {
-        if (!valor || !valor.trim()) {
-          return 'Ingresá tu nombre para continuar.';
-        }
-
-        return null;
-      }
-    });
-
-    if (!resultado.isConfirmed) {
-      return;
-    }
-
-    const nombreCliente =
-      resultado.value.trim();
-
-    const pedidosActuales = leerPedidos();
-    const retiro = generarRetiro(
-      pedidosActuales
+    actualizarCarrito(
+      nuevoCarrito
     );
+  };
 
-    const nuevoPedido = {
-      retiro,
-      cliente: nombreCliente,
-      telefono: '',
-      fecha: obtenerFechaActual(),
-      estado: 'Pendiente',
-      detalle: obtenerDetalle(carrito),
-      items: convertirItemsDelCarrito(carrito),
-      notas: obtenerNotas(carrito)
+  const borrarCarrito =
+    () => {
+      actualizarCarrito([]);
+      setMostrarConfirmacion(
+        false
+      );
+      setCantidades({});
     };
 
-    const pedidosActualizados = [
-      ...pedidosActuales,
-      nuevoPedido
-    ];
+  const confirmarPedido =
+    async () => {
+      if (
+        carrito.length === 0
+      ) {
+        return;
+      }
 
-    guardarPedidos(pedidosActualizados);
+      const tipoUsuario =
+        localStorage.getItem(
+          'tipoUsuario'
+        );
 
-    window.dispatchEvent(
-      new Event('pedidosActualizados')
-    );
+      if (
+        tipoUsuario !==
+        'cliente'
+      ) {
+        await Alerta.fire({
+          icon: 'warning',
+          title:
+            'Acceso no permitido',
+          text: 'Solo los clientes pueden confirmar pedidos.',
+          confirmButtonText:
+            'Entendido'
+        });
 
-    actualizarCarrito([]);
-    setCantidades({});
+        return;
+      }
 
-    await Alerta.fire({
-      icon: 'success',
-      title: 'Pedido confirmado',
-      html: `
-        <p>Tu pedido fue confirmado correctamente.</p>
-        <strong>Código de retiro: ${retiro}</strong>
-      `,
-      confirmButtonText: 'Entendido'
-    });
+      const resultado =
+        await Alerta.fire({
+          icon: 'question',
+          title:
+            'Confirmar pedido',
+          text: 'Ingresá tu nombre para confirmar el pedido.',
+          input: 'text',
+          inputLabel:
+            'Nombre y apellido',
+          inputPlaceholder:
+            'Ej: Juan Pérez',
+          inputAttributes: {
+            maxlength: '80',
+            autocomplete: 'name'
+          },
+          showCancelButton:
+            true,
+          confirmButtonText:
+            'Confirmar pedido',
+          cancelButtonText:
+            'Cancelar',
+          reverseButtons:
+            true,
+          inputValidator:
+            (valor) => {
+              if (
+                !valor ||
+                !valor.trim()
+              ) {
+                return 'Ingresá tu nombre para continuar.';
+              }
 
-    onCerrar();
-  };
+              return null;
+            }
+        });
+
+      if (
+        !resultado.isConfirmed
+      ) {
+        return;
+      }
+
+      const nombreCliente =
+        resultado.value.trim();
+
+      const pedidosActuales =
+        leerPedidos();
+
+      const retiro =
+        generarRetiro(
+          pedidosActuales
+        );
+
+      const nuevoPedido = {
+        retiro,
+        cliente:
+          nombreCliente,
+        telefono: '',
+        fecha:
+          obtenerFechaActual(),
+        estado:
+          'Pendiente',
+        detalle:
+          obtenerDetalle(
+            carrito
+          ),
+        items:
+          convertirItemsDelCarrito(
+            carrito
+          ),
+        notas:
+          obtenerNotas(
+            carrito
+          )
+      };
+
+      const pedidosActualizados =
+        [
+          ...pedidosActuales,
+          nuevoPedido
+        ];
+
+      try {
+        guardarPedidos(
+          pedidosActualizados
+        );
+      } catch {
+        await Alerta.fire({
+          icon: 'error',
+          title:
+            'No se pudo guardar el pedido',
+          text: 'No hay suficiente espacio para guardar el pedido y su archivo.'
+        });
+
+        return;
+      }
+
+      window.dispatchEvent(
+        new Event(
+          'pedidosActualizados'
+        )
+      );
+
+      actualizarCarrito([]);
+      setCantidades({});
+
+      await Alerta.fire({
+        icon: 'success',
+        title:
+          'Pedido confirmado',
+        html: `
+          <p>Tu pedido fue confirmado correctamente.</p>
+          <strong>Código de retiro: ${retiro}</strong>
+        `,
+        confirmButtonText:
+          'Entendido'
+      });
+
+      onCerrar();
+    };
 
   const cambiarCantidad = (
     idProducto,
     valor
   ) => {
-    setCantidades((anteriores) => ({
-      ...anteriores,
-      [idProducto]: valor
-    }));
+    setCantidades(
+      (anteriores) => ({
+        ...anteriores,
+        [idProducto]:
+          valor
+      })
+    );
   };
 
-  const total = carrito.reduce(
-    (suma, item) =>
-      suma +
-      Number(item.precio) *
-        Number(item.cantidad),
-    0
-  );
+  const total =
+    carrito.reduce(
+      (suma, item) =>
+        suma +
+        Number(
+          item.precio
+        ) *
+          Number(
+            item.cantidad
+          ),
+      0
+    );
 
   return (
     <>
       <aside
         className={`coki-cart-panel ${
-          abierto ? 'is-open' : ''
+          abierto
+            ? 'is-open'
+            : ''
         }`}
         aria-labelledby="cokiCartTitle"
         aria-hidden={!abierto}
@@ -375,116 +553,162 @@ function CartPanel({
           </header>
 
           <div className="coki-cart-panel__body">
-            {carrito.length === 0 ? (
+            {carrito.length ===
+            0 ? (
               <p className="coki-cart-panel__empty">
                 Tu carrito está vacío.
               </p>
             ) : (
-              carrito.map((item) => (
-                <article
-                  className="coki-cart-item"
-                  key={item.id}
-                >
-                  <div>
-                    <h3>{item.nombre}</h3>
+              carrito.map(
+                (item) => (
+                  <article
+                    className="coki-cart-item"
+                    key={item.id}
+                  >
+                    <div>
+                      <h3>
+                        {item.nombre}
+                      </h3>
 
-                    <p>
-                      {item.cantidad} x{' '}
-                      {formatearPrecio(
-                        item.precio
+                      <p>
+                        {item.cantidad} x{' '}
+                        {formatearPrecio(
+                          item.precio
+                        )}
+                      </p>
+
+                      {item.esImpresion && (
+                        <div className="coki-cart-item__printing">
+                          <p>
+                            <strong>
+                              Tipo de impresión:
+                            </strong>{' '}
+                            {
+                              item.tipoImpresion
+                            }
+                          </p>
+
+                          <p>
+                            <strong>
+                              Tipo de papel:
+                            </strong>{' '}
+                            {
+                              item.tipoPapel
+                            }
+                          </p>
+
+                          <p>
+                            <strong>
+                              Cantidad de copias:
+                            </strong>{' '}
+                            {
+                              item.cantidad
+                            }
+                          </p>
+
+                          <p>
+                            <strong>
+                              Precio por copia:
+                            </strong>{' '}
+                            {
+                              formatearPrecio(
+                                item.precio
+                              )
+                            }
+                          </p>
+
+                          <p>
+                            <strong>
+                              Descripción:
+                            </strong>{' '}
+                            {
+                              item.descripcion
+                            }
+                          </p>
+
+                          <p>
+                            <strong>
+                              Archivo:
+                            </strong>{' '}
+                            {
+                              item.archivo
+                            }
+                          </p>
+                        </div>
                       )}
-                    </p>
+                    </div>
 
-                    {item.esImpresion && (
-                      <div className="coki-cart-item__printing">
-                        <p>
-                          <strong>
-                            Tipo de impresión:
-                          </strong>{' '}
-                          {item.tipoImpresion}
-                        </p>
+                    <div className="coki-cart-item__controls">
+                      <Form.Label
+                        htmlFor={`cartRemoveQuantity-${item.id}`}
+                      >
+                        Quitar
+                      </Form.Label>
 
-                        <p>
-                          <strong>
-                            Tipo de papel:
-                          </strong>{' '}
-                          {item.tipoPapel}
-                        </p>
+                      <Form.Control
+                        id={`cartRemoveQuantity-${item.id}`}
+                        className="coki-cart-item__quantity"
+                        type="number"
+                        min="1"
+                        max={
+                          item.cantidad
+                        }
+                        value={
+                          cantidades[
+                            item.id
+                          ] || 1
+                        }
+                        onChange={(
+                          event
+                        ) =>
+                          cambiarCantidad(
+                            item.id,
+                            event.target
+                              .value
+                          )
+                        }
+                      />
 
-                        <p>
-                          <strong>
-                            Descripción:
-                          </strong>{' '}
-                          {item.descripcion}
-                        </p>
+                      <Button
+                        type="button"
+                        className="coki-cart-item__remove"
+                        onClick={() =>
+                          quitarCantidad(
+                            item.id
+                          )
+                        }
+                      >
+                        Quitar cantidad
+                      </Button>
 
-                        <p>
-                          <strong>
-                            Archivo:
-                          </strong>{' '}
-                          {item.archivo}
-                        </p>
-                      </div>
-                    )}
-                  </div>
-
-                  <div className="coki-cart-item__controls">
-                    <Form.Label
-                      htmlFor={`cartRemoveQuantity-${item.id}`}
-                    >
-                      Quitar
-                    </Form.Label>
-
-                    <Form.Control
-                      id={`cartRemoveQuantity-${item.id}`}
-                      className="coki-cart-item__quantity"
-                      type="number"
-                      min="1"
-                      max={item.cantidad}
-                      value={
-                        cantidades[item.id] || 1
-                      }
-                      onChange={(event) =>
-                        cambiarCantidad(
-                          item.id,
-                          event.target.value
-                        )
-                      }
-                    />
-
-                    <Button
-                      type="button"
-                      className="coki-cart-item__remove"
-                      onClick={() =>
-                        quitarCantidad(
-                          item.id
-                        )
-                      }
-                    >
-                      Quitar cantidad
-                    </Button>
-
-                    <Button
-                      type="button"
-                      className="coki-cart-item__remove-all"
-                      onClick={() =>
-                        quitarTodo(item.id)
-                      }
-                    >
-                      Quitar todo
-                    </Button>
-                  </div>
-                </article>
-              ))
+                      <Button
+                        type="button"
+                        className="coki-cart-item__remove-all"
+                        onClick={() =>
+                          quitarTodo(
+                            item.id
+                          )
+                        }
+                      >
+                        Quitar todo
+                      </Button>
+                    </div>
+                  </article>
+                )
+              )
             )}
           </div>
 
           <footer className="coki-cart-panel__footer">
             <div className="coki-cart-panel__total">
-              <span>Total</span>
+              <span>
+                Total
+              </span>
 
               <strong>
-                {formatearPrecio(total)}
+                {formatearPrecio(
+                  total
+                )}
               </strong>
             </div>
 
@@ -492,8 +716,13 @@ function CartPanel({
               <Button
                 type="button"
                 className="coki-cart-panel__confirm"
-                onClick={confirmarPedido}
-                disabled={carrito.length === 0}
+                onClick={
+                  confirmarPedido
+                }
+                disabled={
+                  carrito.length ===
+                  0
+                }
               >
                 Confirmar pedido
               </Button>
@@ -502,13 +731,19 @@ function CartPanel({
                 type="button"
                 className="coki-cart-panel__clear"
                 onClick={() => {
-                  if (carrito.length > 0) {
+                  if (
+                    carrito.length >
+                    0
+                  ) {
                     setMostrarConfirmacion(
                       true
                     );
                   }
                 }}
-                disabled={carrito.length === 0}
+                disabled={
+                  carrito.length ===
+                  0
+                }
               >
                 Borrar carrito
               </Button>
@@ -549,8 +784,8 @@ function CartPanel({
             </h2>
 
             <p>
-              Se eliminarán todos los productos
-              que agregaste.
+              Se eliminarán todos los
+              productos que agregaste.
             </p>
 
             <div className="coki-cart-confirm__actions">
@@ -569,7 +804,9 @@ function CartPanel({
               <Button
                 type="button"
                 className="coki-cart-confirm__accept"
-                onClick={borrarCarrito}
+                onClick={
+                  borrarCarrito
+                }
               >
                 Borrar carrito
               </Button>

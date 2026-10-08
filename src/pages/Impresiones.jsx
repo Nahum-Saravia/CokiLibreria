@@ -7,26 +7,60 @@ import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
 import Toast from 'react-bootstrap/Toast';
 import ToastContainer from 'react-bootstrap/ToastContainer';
-import { tiposImpresion, tiposPapel } from '../data/opcionesImpresion';
+import {
+  tiposImpresion,
+  tiposPapel
+} from '../data/opcionesImpresion';
 import Alerta from '../components/Alerta/alerta';
 import './Impresiones.css';
+
+function obtenerPrecioImpresion(tipo) {
+  const texto = String(
+    tipo?.texto || tipo?.valor || ''
+  ).toLowerCase();
+
+  return texto.includes('color') ? 400 : 200;
+}
+
+function leerArchivo(archivo) {
+  return new Promise((resolve, reject) => {
+    const lector = new FileReader();
+
+    lector.onload = () => {
+      resolve(lector.result);
+    };
+
+    lector.onerror = () => {
+      reject(
+        new Error('No se pudo leer el archivo.')
+      );
+    };
+
+    lector.readAsDataURL(archivo);
+  });
+}
 
 function Impresiones() {
   const esCliente =
     localStorage.getItem('tipoUsuario') === 'cliente';
 
-  const [tipoImpresion, setTipoImpresion] = useState(
-    tiposImpresion[0]?.valor || ''
-  );
+  const [tipoImpresion, setTipoImpresion] =
+    useState(
+      tiposImpresion[0]?.valor || ''
+    );
 
-  const [tipoPapel, setTipoPapel] = useState(
-    tiposPapel[0]?.valor || ''
-  );
+  const [tipoPapel, setTipoPapel] =
+    useState(
+      tiposPapel[0]?.valor || ''
+    );
 
   const [cantidad, setCantidad] = useState(1);
-  const [descripcion, setDescripcion] = useState('');
-  const [archivo, setArchivo] = useState(null);
-  const [aviso, setAviso] = useState('');
+  const [descripcion, setDescripcion] =
+    useState('');
+  const [archivo, setArchivo] =
+    useState(null);
+  const [aviso, setAviso] =
+    useState('');
 
   const agregarAlCarrito = async (event) => {
     event.preventDefault();
@@ -40,6 +74,7 @@ function Impresiones() {
         title: 'Acceso no permitido',
         text: 'Solo los clientes pueden agregar impresiones al carrito.'
       });
+
       return;
     }
 
@@ -47,8 +82,9 @@ function Impresiones() {
       await Alerta.fire({
         icon: 'warning',
         title: 'Cantidad no válida',
-        text: 'La cantidad de copias debe ser al menos 1.'
+        text: 'La cantidad de copias debe ser de al menos 1.'
       });
+
       return;
     }
 
@@ -58,6 +94,7 @@ function Impresiones() {
         title: 'Falta la descripción',
         text: 'Ingresá una descripción para la impresión.'
       });
+
       return;
     }
 
@@ -67,6 +104,7 @@ function Impresiones() {
         title: 'Falta el archivo',
         text: 'Seleccioná el archivo que querés mandar a imprimir.'
       });
+
       return;
     }
 
@@ -81,6 +119,26 @@ function Impresiones() {
         (papel) =>
           papel.valor === tipoPapel
       );
+
+    const precioUnitario =
+      obtenerPrecioImpresion(
+        tipoImpresionSeleccionado
+      );
+
+    let archivoUrl;
+
+    try {
+      archivoUrl =
+        await leerArchivo(archivo);
+    } catch {
+      await Alerta.fire({
+        icon: 'error',
+        title: 'No se pudo cargar el archivo',
+        text: 'No fue posible guardar el archivo seleccionado.'
+      });
+
+      return;
+    }
 
     const guardado =
       localStorage.getItem(
@@ -100,7 +158,7 @@ function Impresiones() {
     const nuevaImpresion = {
       id: `impresion-${Date.now()}`,
       nombre: 'Servicio de impresión',
-      precio: 0,
+      precio: precioUnitario,
       cantidad,
       esImpresion: true,
       tipoImpresion:
@@ -110,15 +168,27 @@ function Impresiones() {
         tipoPapelSeleccionado?.texto ||
         tipoPapel,
       descripcion: descripcion.trim(),
-      archivo: archivo.name
+      archivo: archivo.name,
+      archivoUrl,
+      archivoTipo: archivo.type
     };
 
     carrito.push(nuevaImpresion);
 
-    localStorage.setItem(
-      'coki-carrito',
-      JSON.stringify(carrito)
-    );
+    try {
+      localStorage.setItem(
+        'coki-carrito',
+        JSON.stringify(carrito)
+      );
+    } catch {
+      await Alerta.fire({
+        icon: 'error',
+        title: 'No se pudo guardar la impresión',
+        text: 'El archivo es demasiado grande para guardarlo en el carrito.'
+      });
+
+      return;
+    }
 
     window.dispatchEvent(
       new Event('carritoActualizado')
@@ -145,7 +215,9 @@ function Impresiones() {
 
   return (
     <main className="flex-grow-1">
-      <title>Impresiones - Coki Librería</title>
+      <title>
+        Impresiones - Coki Librería
+      </title>
 
       <Container className="py-4 py-md-5">
         <header className="text-center pt-4 mb-4">
@@ -160,7 +232,9 @@ function Impresiones() {
           </p>
         </header>
 
-        <section aria-labelledby="tituloOpciones">
+        <section
+          aria-labelledby="tituloOpciones"
+        >
           <h2
             id="tituloOpciones"
             className="fw-bold mb-3 coki-texto-claro"
@@ -176,7 +250,9 @@ function Impresiones() {
             <Card.Body className="p-3 p-md-4">
               <Row className="g-3">
                 <Col xs={12} sm={6}>
-                  <Form.Group controlId="tipoImpresion">
+                  <Form.Group
+                    controlId="tipoImpresion"
+                  >
                     <Form.Label>
                       Tipo de impresión
                     </Form.Label>
@@ -190,20 +266,24 @@ function Impresiones() {
                         )
                       }
                     >
-                      {tiposImpresion.map((tipo) => (
-                        <option
-                          key={tipo.id}
-                          value={tipo.valor}
-                        >
-                          {tipo.texto}
-                        </option>
-                      ))}
+                      {tiposImpresion.map(
+                        (tipo) => (
+                          <option
+                            key={tipo.id}
+                            value={tipo.valor}
+                          >
+                            {tipo.texto}
+                          </option>
+                        )
+                      )}
                     </Form.Select>
                   </Form.Group>
                 </Col>
 
                 <Col xs={12} sm={6}>
-                  <Form.Group controlId="tipoPapel">
+                  <Form.Group
+                    controlId="tipoPapel"
+                  >
                     <Form.Label>
                       Tipo de papel
                     </Form.Label>
@@ -217,20 +297,24 @@ function Impresiones() {
                         )
                       }
                     >
-                      {tiposPapel.map((papel) => (
-                        <option
-                          key={papel.id}
-                          value={papel.valor}
-                        >
-                          {papel.texto}
-                        </option>
-                      ))}
+                      {tiposPapel.map(
+                        (papel) => (
+                          <option
+                            key={papel.id}
+                            value={papel.valor}
+                          >
+                            {papel.texto}
+                          </option>
+                        )
+                      )}
                     </Form.Select>
                   </Form.Group>
                 </Col>
 
                 <Col xs={12}>
-                  <Form.Group controlId="cantidad">
+                  <Form.Group
+                    controlId="cantidad"
+                  >
                     <Form.Label>
                       Cantidad de copias
                     </Form.Label>
@@ -240,20 +324,26 @@ function Impresiones() {
                       name="cantidad"
                       min="1"
                       value={cantidad}
-                      onChange={(event) =>
+                      onChange={(event) => {
+                        const valor =
+                          Number(
+                            event.target.value
+                          );
+
                         setCantidad(
-                          Math.max(
-                            1,
-                            Number(event.target.value)
-                          )
-                        )
-                      }
+                          valor > 0
+                            ? valor
+                            : 1
+                        );
+                      }}
                     />
                   </Form.Group>
                 </Col>
 
                 <Col xs={12}>
-                  <Form.Group controlId="descripcion">
+                  <Form.Group
+                    controlId="descripcion"
+                  >
                     <Form.Label>
                       Descripción de la impresión
                     </Form.Label>
@@ -274,7 +364,9 @@ function Impresiones() {
                 </Col>
 
                 <Col xs={12}>
-                  <Form.Group controlId="archivo">
+                  <Form.Group
+                    controlId="archivo"
+                  >
                     <Form.Label>
                       Adjuntar archivo
                     </Form.Label>
@@ -330,3 +422,4 @@ function Impresiones() {
 }
 
 export default Impresiones;
+

@@ -76,12 +76,47 @@ function Sesion() {
       setContrasena('');
       setRepetirContrasena('');
       setMostrarContrasena(false);
+
       return;
     }
 
     if (esAdmin) {
+      const formulario = event.currentTarget;
+      const usuario = formulario.elements.identificador.value.trim();
+      const password = formulario.elements.password.value;
+
+      if (!usuario) {
+        await Alerta.fire({
+          icon: 'warning',
+          title: 'Falta el usuario',
+          text: 'Ingresá tu usuario de administrador.'
+        });
+        return;
+      }
+
+      if (!usuario.includes('@')) {
+        await Alerta.fire({
+          icon: 'warning',
+          title: 'Usuario no válido',
+          text: 'El usuario de administrador debe contener @.'
+        });
+        return;
+      }
+
+      if (!password) {
+        await Alerta.fire({
+          icon: 'warning',
+          title: 'Falta la contraseña',
+          text: 'Ingresá una contraseña para continuar.'
+        });
+        return;
+      }
+
       localStorage.setItem('tipoUsuario', 'admin');
-      window.dispatchEvent(new Event('sesionCambiada'));
+
+      window.dispatchEvent(
+        new Event('sesionCambiada')
+      );
 
       await Alerta.fire({
         icon: 'success',
@@ -90,11 +125,15 @@ function Sesion() {
       });
 
       navigate('/panel-admin');
+
       return;
     }
 
     localStorage.setItem('tipoUsuario', 'cliente');
-    window.dispatchEvent(new Event('sesionCambiada'));
+
+    window.dispatchEvent(
+      new Event('sesionCambiada')
+    );
 
     await Alerta.fire({
       icon: 'success',
@@ -115,7 +154,9 @@ function Sesion() {
         />
 
         <h1>
-          {esRegistro ? 'Registrarse' : 'Inicio de sesión'}
+          {esRegistro
+            ? 'Registrarse'
+            : 'Inicio de sesión'}
         </h1>
 
         <p>
@@ -129,7 +170,14 @@ function Sesion() {
 
       <Container className="sesion-container">
         <Row className="justify-content-center">
-          <Col xs={12} sm={10} md={8} lg={6} xl={5} xxl={4}>
+          <Col
+            xs={12}
+            sm={10}
+            md={8}
+            lg={6}
+            xl={5}
+            xxl={4}
+          >
             <h2 className="sesion-title">
               {esRegistro
                 ? 'Crear una cuenta'
@@ -140,7 +188,10 @@ function Sesion() {
 
             <Card className="sesion-card">
               <Card.Body className="p-4">
-                <Form onSubmit={handleSubmit} noValidate>
+                <Form
+                  onSubmit={handleSubmit}
+                  noValidate
+                >
                   <fieldset>
                     <legend className="sesion-legend">
                       {esRegistro
@@ -152,15 +203,22 @@ function Sesion() {
                       className="mb-3"
                       controlId="tipoUsuario"
                     >
-                      <Form.Label>Tipo de cuenta:</Form.Label>
+                      <Form.Label>
+                        Tipo de cuenta:
+                      </Form.Label>
 
                       <Form.Select
                         value={tipoUsuario}
                         onChange={handleTipoUsuario}
                         className="sesion-input"
                       >
-                        <option value="cliente">Cliente</option>
-                        <option value="admin">Administrador</option>
+                        <option value="cliente">
+                          Cliente
+                        </option>
+
+                        <option value="admin">
+                          Administrador
+                        </option>
                       </Form.Select>
                     </Form.Group>
 
@@ -169,14 +227,22 @@ function Sesion() {
                       controlId="identificador"
                     >
                       <Form.Label>
-                        {esAdmin ? 'Usuario:' : 'Correo electrónico:'}
+                        {esAdmin
+                          ? 'Usuario:'
+                          : 'Correo electrónico:'}
                       </Form.Label>
 
                       <Form.Control
-                        type={esAdmin ? 'text' : 'email'}
+                        type={
+                          esAdmin
+                            ? 'text'
+                            : 'email'
+                        }
                         name="identificador"
                         autoComplete={
-                          esAdmin ? 'username' : 'email'
+                          esAdmin
+                            ? 'username'
+                            : 'email'
                         }
                         placeholder={
                           esAdmin
@@ -192,7 +258,9 @@ function Sesion() {
                       className="mb-2"
                       controlId="password"
                     >
-                      <Form.Label>Contraseña:</Form.Label>
+                      <Form.Label>
+                        Contraseña:
+                      </Form.Label>
 
                       <div className="sesion-password-wrapper">
                         <Form.Control
@@ -277,17 +345,23 @@ function Sesion() {
                     {esRegistro && (
                       <>
                         <div className="sesion-requisitos">
-                          <p>La contraseña debe tener:</p>
+                          <p>
+                            La contraseña debe tener:
+                          </p>
 
                           <ul>
-                            <li>Mínimo 8 caracteres.</li>
+                            <li>
+                              Mínimo 8 caracteres.
+                            </li>
                             <li>
                               Al menos una letra mayúscula.
                             </li>
                             <li>
                               Al menos una letra minúscula.
                             </li>
-                            <li>Al menos un número.</li>
+                            <li>
+                              Al menos un número.
+                            </li>
                             <li>
                               Al menos un carácter especial.
                             </li>
@@ -400,7 +474,9 @@ function Sesion() {
                 <button
                   type="button"
                   className="sesion-link-button"
-                  onClick={() => cambiarModoRegistro(true)}
+                  onClick={() =>
+                    cambiarModoRegistro(true)
+                  }
                 >
                   Registrate
                 </button>
@@ -413,7 +489,9 @@ function Sesion() {
                 <button
                   type="button"
                   className="sesion-link-button"
-                  onClick={() => cambiarModoRegistro(false)}
+                  onClick={() =>
+                    cambiarModoRegistro(false)
+                  }
                 >
                   Iniciá sesión
                 </button>
@@ -421,7 +499,9 @@ function Sesion() {
             )}
 
             <p className="sesion-back">
-              <Link to="/">Volver al inicio</Link>
+              <Link to="/">
+                Volver al inicio
+              </Link>
             </p>
           </Col>
         </Row>
@@ -431,3 +511,4 @@ function Sesion() {
 }
 
 export default Sesion;
+
