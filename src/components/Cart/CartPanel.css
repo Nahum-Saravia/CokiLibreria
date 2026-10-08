@@ -164,8 +164,8 @@
   border: 0;
   border-radius: 8px;
   padding: 0.75rem 1rem;
-  background: var(--color-primario);
-  color: #fff;
+  background: #f0f0f0;
+  color: #222;
   font-weight: 800;
 }
 
@@ -176,8 +176,8 @@
 }
 
 .coki-cart-panel__confirm:disabled {
-  background: var(--color-primario);
-  color: #fff;
+  background: #f0f0f0;
+  color: #222;
   opacity: 0.5;
   cursor: not-allowed;
 }
@@ -192,7 +192,28 @@
   font-weight: 800;
 }
 
+.coki-cart-panel__clear,
+.coki-cart-confirm__accept,
+.coki-cart-item__remove-all {
+  --bs-btn-hover-bg: #b03a2e;
+  --bs-btn-hover-color: #fff;
+  --bs-btn-active-bg: #b03a2e;
+  --bs-btn-active-color: #fff;
+}
+
+.coki-cart-panel__clear:hover,
+.coki-cart-panel__clear:focus,
+.coki-cart-item__remove-all:hover,
+.coki-cart-item__remove-all:focus,
+.coki-cart-confirm__accept:hover,
+.coki-cart-confirm__accept:focus {
+  background: #b03a2e;
+  color: #fff;
+}
+
 .coki-cart-panel__clear:disabled {
+  background: #e74c3c;
+  color: #fff;
   opacity: 0.5;
   cursor: not-allowed;
 }

@@ -3,7 +3,7 @@ import Card from 'react-bootstrap/Card';
 import Button from 'react-bootstrap/Button';
 import './ProductCard.css';
 
-function ProductCard({ imagen, nombre, categoria, descripcion, precio, stock, onAgregar }) {
+function ProductCard({ imagen, nombre, categoria, descripcion, precio, stock, onAgregar, puedeComprar = true }) {
   const sinStock = stock === 0;
   const [cantidad, setCantidad] = useState(1);
 
@@ -38,7 +38,7 @@ function ProductCard({ imagen, nombre, categoria, descripcion, precio, stock, on
         <Card.Text className="small m-0 coki-product-card__descripcion">{descripcion}</Card.Text>
         <div className="d-flex flex-wrap align-items-center gap-2 mt-auto pt-2">
           <span className="fw-bold coki-product-card__precio">$ {precio.toLocaleString('es-AR')}</span>
-          {!sinStock && (
+          {puedeComprar && !sinStock && (
             <div className="d-flex align-items-center coki-product-card__cantidad">
               <button
                 type="button"
@@ -66,9 +66,13 @@ function ProductCard({ imagen, nombre, categoria, descripcion, precio, stock, on
               </button>
             </div>
           )}
-          <Button variant="primary" className="flex-grow-1" onClick={agregar} disabled={sinStock}>
-            {sinStock ? 'Sin stock' : 'Agregar'}
-          </Button>
+          {puedeComprar ? (
+            <Button variant="primary" className="flex-grow-1" onClick={agregar} disabled={sinStock}>
+              {sinStock ? 'Sin stock' : 'Agregar'}
+            </Button>
+          ) : (
+            <span className="small fw-bold coki-product-card__stock">Stock: {stock}</span>
+          )}
         </div>
       </Card.Body>
     </Card>

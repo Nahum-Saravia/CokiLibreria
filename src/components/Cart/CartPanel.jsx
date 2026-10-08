@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Button, Form } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
-import Swal from 'sweetalert2';
+import Alerta from '../Alerta/alerta';
 import { crearPedido } from '../../data/almacenamiento';
 import './CartPanel.css';
 
@@ -133,19 +133,18 @@ function CartPanel({ abierto, onCerrar, onCarritoActualizado }) {
 
   const confirmarPedido = async () => {
     if (!localStorage.getItem('tipoUsuario')) {
-      await Swal.fire({
+      await Alerta.fire({
         icon: 'info',
         title: 'Iniciá sesión',
         text: 'Para hacer un pedido tenés que iniciar sesión.',
-        confirmButtonText: 'Ir a iniciar sesión',
-        confirmButtonColor: 'var(--color-primario)'
+        confirmButtonText: 'Ir a iniciar sesión'
       });
       onCerrar();
       navigate('/sesion');
       return;
     }
 
-    const { value: datos } = await Swal.fire({
+    const { value: datos } = await Alerta.fire({
       title: 'Confirmar pedido',
       html: `
         <input id="swal-nombre" class="swal2-input" placeholder="Nombre y apellido">
@@ -155,7 +154,6 @@ function CartPanel({ abierto, onCerrar, onCarritoActualizado }) {
       showCancelButton: true,
       confirmButtonText: 'Confirmar',
       cancelButtonText: 'Cancelar',
-      confirmButtonColor: 'var(--color-primario)',
       focusConfirm: false,
       preConfirm: () => {
         const cliente = document.getElementById('swal-nombre').value.trim();
@@ -163,7 +161,7 @@ function CartPanel({ abierto, onCerrar, onCarritoActualizado }) {
         const notas = document.getElementById('swal-notas').value.trim();
 
         if (!cliente || !telefono) {
-          Swal.showValidationMessage('Completá tu nombre y teléfono.');
+          Alerta.showValidationMessage('Completá tu nombre y teléfono.');
           return false;
         }
 
@@ -178,11 +176,10 @@ function CartPanel({ abierto, onCerrar, onCarritoActualizado }) {
     const resultado = crearPedido(datos);
 
     if (resultado.error) {
-      Swal.fire({
+      Alerta.fire({
         icon: 'error',
         title: 'No se pudo hacer el pedido',
-        text: resultado.error,
-        confirmButtonColor: 'var(--color-primario)'
+        text: resultado.error
       });
       return;
     }
@@ -190,11 +187,10 @@ function CartPanel({ abierto, onCerrar, onCarritoActualizado }) {
     setCarrito([]);
     onCerrar();
 
-    Swal.fire({
+    Alerta.fire({
       icon: 'success',
       title: '¡Pedido confirmado!',
-      html: `Tu número de retiro es <strong>${resultado.pedido.retiro}</strong>.<br>Guardalo para consultar el estado de tu pedido.`,
-      confirmButtonColor: 'var(--color-primario)'
+      html: `Tu número de retiro es <strong>${resultado.pedido.retiro}</strong>.<br>Guardalo para consultar el estado de tu pedido.`
     });
   };
 

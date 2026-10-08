@@ -1,0 +1,46 @@
+.coki-alerta {
+  font-family: var(--fuente-texto);
+  color: var(--color-tinta);
+  background-color: var(--color-superficie);
+  border: var(--borde);
+  border-radius: var(--radio-lg);
+  box-shadow: var(--sombra-dura);
+}
+
+.coki-alerta .swal2-title {
+  font-family: var(--fuente-titulos);
+  color: var(--color-tinta);
+}
+
+.coki-alerta .swal2-html-container {
+  color: var(--color-tinta);
+}
+
+.coki-alerta .swal2-actions {
+  gap: 0.75rem;
+}
+
+.coki-alerta .swal2-input,
+.coki-alerta .swal2-textarea {
+  color: var(--color-tinta);
+  background-color: var(--color-superficie-alt);
+  border: var(--borde);
+  border-radius: var(--radio-md);
+  box-shadow: none;
+}
+
+.coki-alerta .swal2-input:focus,
+.coki-alerta .swal2-textarea:focus {
+  border-color: var(--color-primario);
+  box-shadow: 0 0 0 3px rgba(222, 84, 153, 0.25);
+}
+
+.coki-alerta .swal2-input::placeholder,
+.coki-alerta .swal2-textarea::placeholder {
+  color: var(--color-texto-suave);
+}
+
+.coki-alerta .swal2-validation-message {
+  color: var(--color-tinta);
+  background-color: var(--color-superficie-alt);
+}

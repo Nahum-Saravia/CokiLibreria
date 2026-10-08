@@ -13,7 +13,7 @@ import {
 } from 'react-bootstrap';
 import './PanelAdmin.css';
 import { useEffect, useState } from 'react';
-import Swal from 'sweetalert2';
+import Alerta from '../components/Alerta/alerta';
 import {
   leerProductos,
   guardarProductos,
@@ -132,16 +132,11 @@ function PanelAdmin() {
   const hayEntregados = pedidos.some((pedido) => pedido.estado === 'Entregado');
 
   const avisarSinPedidos = (tipo) => {
-    Swal.fire({
+    Alerta.fire({
       icon: 'info',
       title: `No hay pedidos ${tipo}`,
       text: `No hay pedidos ${tipo} para eliminar.`,
-      confirmButtonText: 'Entendido',
-      buttonsStyling: false,
-      customClass: {
-        popup: 'admin-alerta',
-        confirmButton: 'admin-primary-button'
-      }
+      confirmButtonText: 'Entendido'
     });
   };
 
@@ -266,16 +261,11 @@ function PanelAdmin() {
 
     if (archivo.size > TAMANIO_MAXIMO_IMAGEN) {
       evento.target.value = '';
-      Swal.fire({
+      Alerta.fire({
         icon: 'warning',
         title: 'La imagen es muy pesada',
         text: 'Elegí una imagen de hasta 1 MB.',
-        confirmButtonText: 'Entendido',
-        buttonsStyling: false,
-        customClass: {
-          popup: 'admin-alerta',
-          confirmButton: 'admin-primary-button'
-        }
+        confirmButtonText: 'Entendido'
       });
       return;
     }
