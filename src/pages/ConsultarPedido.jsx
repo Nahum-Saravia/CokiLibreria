@@ -8,13 +8,20 @@ import {
   Button
 } from 'react-bootstrap';
 import { Link, useNavigate } from 'react-router-dom';
+import { buscarPedidos } from '../data/almacenamiento';
+import {
+  claseEstado,
+  formatearPrecio,
+  calcularTotal
+} from '../data/estadosPedido';
 import './ConsultarPedido.css';
 
 function ConsultarPedido() {
   const navigate = useNavigate();
 
   const [consulta, setConsulta] = useState('');
-  const [resultado, setResultado] = useState('');
+  const [pedidosEncontrados, setPedidosEncontrados] = useState(null);
+  const [error, setError] = useState('');
 
   useEffect(() => {
     const tipoUsuario = localStorage.getItem('tipoUsuario');
@@ -28,13 +35,13 @@ function ConsultarPedido() {
     event.preventDefault();
 
     if (!consulta.trim()) {
-      setResultado('Ingresá un número de retiro o teléfono.');
+      setError('Ingresá un número de retiro o teléfono.');
+      setPedidosEncontrados(null);
       return;
     }
 
-    setResultado(
-      `Consulta realizada para: ${consulta.trim()}`
-    );
+    setError('');
+    setPedidosEncontrados(buscarPedidos(consulta));
   };
 
   return (
@@ -73,7 +80,7 @@ function ConsultarPedido() {
                       onChange={(event) =>
                         setConsulta(event.target.value)
                       }
-                      placeholder="Ej: R-00024"
+                      placeholder="Ej: #1048 o 381 412-5587"
                       className="pedido-input"
                     />
                   </Form.Group>
@@ -88,11 +95,59 @@ function ConsultarPedido() {
                   </div>
                 </Form>
 
-                {resultado && (
+                {error && (
                   <div className="pedido-resultado">
-                    {resultado}
+                    {error}
                   </div>
                 )}
+
+                {pedidosEncontrados && pedidosEncontrados.length === 0 && (
+                  <div className="pedido-resultado">
+                    No encontramos pedidos con ese número o teléfono.
+                  </div>
+                )}
+
+                {pedidosEncontrados &&
+                  pedidosEncontrados.map((pedido) => (
+                    <article
+                      key={pedido.retiro}
+                      className="pedido-resultado"
+                    >
+                      <div className="pedido-resultado__encabezado">
+                        <div>
+                          <h3>Pedido {pedido.retiro}</h3>
+                          <p className="pedido-resultado__fecha">
+                            {pedido.fecha}
+                          </p>
+                        </div>
+
+                        <span
+                          className={`pedido-estado pedido-estado--${claseEstado(pedido.estado)}`}
+                        >
+                          {pedido.estado}
+                        </span>
+                      </div>
+
+                      <ul className="pedido-resultado__items">
+                        {pedido.items.map((item) => (
+                          <li key={item.producto}>
+                            <span>
+                              {item.cantidad} x {item.producto}
+                            </span>
+                            <span>
+                              {formatearPrecio(
+                                item.cantidad * item.precioUnitario
+                              )}
+                            </span>
+                          </li>
+                        ))}
+                      </ul>
+
+                      <p className="pedido-resultado__total">
+                        Total: {formatearPrecio(calcularTotal(pedido))}
+                      </p>
+                    </article>
+                  ))}
               </Card.Body>
             </Card>
           </Col>

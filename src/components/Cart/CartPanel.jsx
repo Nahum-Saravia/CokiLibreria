@@ -1,5 +1,8 @@
 import { useEffect, useState } from 'react';
 import { Button, Form } from 'react-bootstrap';
+import { useNavigate } from 'react-router-dom';
+import Swal from 'sweetalert2';
+import { crearPedido } from '../../data/almacenamiento';
 import './CartPanel.css';
 
 const CLAVE_CARRITO = 'coki-carrito';
@@ -28,6 +31,7 @@ function formatearPrecio(precio) {
 }
 
 function CartPanel({ abierto, onCerrar, onCarritoActualizado }) {
+  const navigate = useNavigate();
   const [carrito, setCarrito] = useState(leerCarrito);
   const [mostrarConfirmacion, setMostrarConfirmacion] = useState(false);
   const [cantidades, setCantidades] = useState({});
@@ -111,6 +115,7 @@ function CartPanel({ abierto, onCerrar, onCarritoActualizado }) {
         .filter((item) => item.cantidad > 0);
 
     actualizarCarrito(nuevoCarrito);
+    cambiarCantidad(idProducto, 1, 1);
     };
 
   const quitarTodo = (idProducto) => {
@@ -126,10 +131,80 @@ function CartPanel({ abierto, onCerrar, onCarritoActualizado }) {
     setMostrarConfirmacion(false);
   };
 
-  const cambiarCantidad = (idProducto, valor) => {
+  const confirmarPedido = async () => {
+    if (!localStorage.getItem('tipoUsuario')) {
+      await Swal.fire({
+        icon: 'info',
+        title: 'Iniciá sesión',
+        text: 'Para hacer un pedido tenés que iniciar sesión.',
+        confirmButtonText: 'Ir a iniciar sesión',
+        confirmButtonColor: 'var(--color-primario)'
+      });
+      onCerrar();
+      navigate('/sesion');
+      return;
+    }
+
+    const { value: datos } = await Swal.fire({
+      title: 'Confirmar pedido',
+      html: `
+        <input id="swal-nombre" class="swal2-input" placeholder="Nombre y apellido">
+        <input id="swal-telefono" class="swal2-input" placeholder="Teléfono">
+        <textarea id="swal-notas" class="swal2-textarea" placeholder="Notas (opcional)"></textarea>
+      `,
+      showCancelButton: true,
+      confirmButtonText: 'Confirmar',
+      cancelButtonText: 'Cancelar',
+      confirmButtonColor: 'var(--color-primario)',
+      focusConfirm: false,
+      preConfirm: () => {
+        const cliente = document.getElementById('swal-nombre').value.trim();
+        const telefono = document.getElementById('swal-telefono').value.trim();
+        const notas = document.getElementById('swal-notas').value.trim();
+
+        if (!cliente || !telefono) {
+          Swal.showValidationMessage('Completá tu nombre y teléfono.');
+          return false;
+        }
+
+        return { cliente, telefono, notas };
+      }
+    });
+
+    if (!datos) {
+      return;
+    }
+
+    const resultado = crearPedido(datos);
+
+    if (resultado.error) {
+      Swal.fire({
+        icon: 'error',
+        title: 'No se pudo hacer el pedido',
+        text: resultado.error,
+        confirmButtonColor: 'var(--color-primario)'
+      });
+      return;
+    }
+
+    setCarrito([]);
+    onCerrar();
+
+    Swal.fire({
+      icon: 'success',
+      title: '¡Pedido confirmado!',
+      html: `Tu número de retiro es <strong>${resultado.pedido.retiro}</strong>.<br>Guardalo para consultar el estado de tu pedido.`,
+      confirmButtonColor: 'var(--color-primario)'
+    });
+  };
+
+  const cambiarCantidad = (idProducto, valor, maximo) => {
+    const cantidad =
+      valor === '' ? '' : Math.min(Math.max(Number(valor) || 1, 1), maximo);
+
     setCantidades((anteriores) => ({
       ...anteriores,
-      [idProducto]: valor
+      [idProducto]: cantidad
     }));
   };
 
@@ -205,11 +280,16 @@ function CartPanel({ abierto, onCerrar, onCarritoActualizado }) {
                       type="number"
                       min="1"
                       max={item.cantidad}
-                      value={cantidades[item.id] || 1}
+                      value={
+                        cantidades[item.id] === ''
+                          ? ''
+                          : Math.min(cantidades[item.id] || 1, item.cantidad)
+                      }
                       onChange={(event) =>
                         cambiarCantidad(
                           item.id,
-                          event.target.value
+                          event.target.value,
+                          item.cantidad
                         )
                       }
                     />
@@ -245,6 +325,15 @@ function CartPanel({ abierto, onCerrar, onCarritoActualizado }) {
 
               <strong>{formatearPrecio(total)}</strong>
             </div>
+
+            <Button
+              type="button"
+              className="coki-cart-panel__confirm"
+              onClick={confirmarPedido}
+              disabled={carrito.length === 0}
+            >
+              Confirmar pedido
+            </Button>
 
             <Button
               type="button"

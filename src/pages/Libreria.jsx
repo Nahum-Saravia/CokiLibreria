@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
@@ -10,7 +10,7 @@ import Pagination from 'react-bootstrap/Pagination';
 import Toast from 'react-bootstrap/Toast';
 import ToastContainer from 'react-bootstrap/ToastContainer';
 import ProductCard from '../components/Card/ProductCard';
-import productos from '../data/productos';
+import { leerProductos } from '../data/almacenamiento';
 import './Libreria.css';
 
 const PRODUCTOS_POR_PAGINA = 6;
@@ -20,9 +20,22 @@ function normalizar(texto) {
 }
 
 function Libreria() {
+  const [productos, setProductos] = useState(leerProductos);
   const [busqueda, setBusqueda] = useState('');
   const [paginaActual, setPaginaActual] = useState(1);
   const [aviso, setAviso] = useState('');
+
+  useEffect(() => {
+    const actualizar = () => setProductos(leerProductos());
+
+    window.addEventListener('productosActualizados', actualizar);
+    window.addEventListener('storage', actualizar);
+
+    return () => {
+      window.removeEventListener('productosActualizados', actualizar);
+      window.removeEventListener('storage', actualizar);
+    };
+  }, []);
 
   const buscado = normalizar(busqueda.trim());
   const encontrados = productos.filter((producto) =>
@@ -39,7 +52,7 @@ function Libreria() {
     setPaginaActual(1);
   }
 
-  function agregarAlCarrito(producto) {
+  function agregarAlCarrito(producto, cantidad = 1) {
     const carrito = JSON.parse(
       localStorage.getItem('coki-carrito') || '[]'
     );
@@ -48,14 +61,28 @@ function Libreria() {
       (item) => item.id === producto.id
     );
 
+    const cantidadEnCarrito = yaEstaba ? yaEstaba.cantidad : 0;
+
+    const disponible = producto.stock - cantidadEnCarrito;
+
+    if (disponible <= 0) {
+      setAviso(`No hay más stock de "${producto.nombre}".`);
+      return;
+    }
+
+    if (cantidad > disponible) {
+      setAviso(`Solo podés agregar ${disponible} más de "${producto.nombre}".`);
+      return;
+    }
+
     if (yaEstaba) {
-      yaEstaba.cantidad += 1;
+      yaEstaba.cantidad += cantidad;
     } else {
       carrito.push({
         id: producto.id,
         nombre: producto.nombre,
         precio: producto.precio,
-        cantidad: 1
+        cantidad
       });
     }
 
@@ -66,7 +93,7 @@ function Libreria() {
 
     window.dispatchEvent(new Event('carritoActualizado'));
 
-    setAviso(`Agregaste "${producto.nombre}" al carrito.`);
+    setAviso(`Agregaste ${cantidad} x "${producto.nombre}" al carrito.`);
   }
 
   return (
@@ -115,7 +142,8 @@ function Libreria() {
                         categoria={producto.categoria}
                         descripcion={producto.descripcion}
                         precio={producto.precio}
-                        onAgregar={() => agregarAlCarrito(producto)}
+                        stock={producto.stock}
+                        onAgregar={(cantidad) => agregarAlCarrito(producto, cantidad)}
                       />
                     </Col>
                   ))}

@@ -14,7 +14,18 @@ import {
 import './PanelAdmin.css';
 import { useEffect, useState } from 'react';
 import Swal from 'sweetalert2';
+import {
+  leerProductos,
+  guardarProductos,
+  leerPedidos,
+  guardarPedidos
+} from '../data/almacenamiento';
 import productosIniciales from '../data/productos';
+import estadosPedido, {
+  claseEstado,
+  formatearPrecio,
+  calcularTotal
+} from '../data/estadosPedido';
 
 const STOCK_BAJO = 5;
 
@@ -30,22 +41,6 @@ const productoVacio = {
   descripcion: '',
   imagen: ''
 };
-
-const estadosPedido = [
-  { valor: 'Pendiente', texto: 'Pendiente', clase: 'pendiente' },
-  { valor: 'En preparación', texto: 'En preparación', clase: 'preparacion' },
-  { valor: 'Listo', texto: 'Listo para retirar', clase: 'listo' },
-  { valor: 'Entregado', texto: 'Entregado', clase: 'entregado' },
-  { valor: 'Cancelado', texto: 'Cancelado', clase: 'cancelado' }
-];
-
-function claseEstado(estado) {
-  return estadosPedido.find((opcion) => opcion.valor === estado)?.clase;
-}
-
-function formatearPrecio(precio) {
-  return `$${precio.toLocaleString('es-AR')}`;
-}
 
 const periodosVentas = [
   { valor: 'dia', texto: 'Día', detalle: 'hoy' },
@@ -80,92 +75,20 @@ function esDelPeriodo(fechaTexto, periodo) {
   return fecha >= inicioSemana && fecha <= hoy;
 }
 
-function calcularTotal(pedido) {
-  return pedido.items.reduce(
-    (total, item) => total + item.cantidad * item.precioUnitario,
-    0
-  );
-}
-
 function normalizar(texto) {
   return texto.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
 }
 
-const pedidosIniciales = [
-  {
-    retiro: '#1048',
-    cliente: 'Martina López',
-    telefono: '381 412-5587',
-    fecha: '07/10/2026',
-    detalle: '20 fotocopias A4',
-    estado: 'Pendiente',
-    items: [
-      { producto: 'Fotocopia A4 blanco y negro', cantidad: 20, precioUnitario: 90 }
-    ],
-    notas: 'Doble faz y abrochadas.'
-  },
-  {
-    retiro: '#1047',
-    cliente: 'Tomás García',
-    telefono: '381 455-2210',
-    fecha: '06/10/2026',
-    detalle: 'Cuaderno + lápices',
-    estado: 'Listo',
-    items: [
-      { producto: 'Cuaderno ABC tapa dura', cantidad: 1, precioUnitario: 4200 },
-      { producto: 'Lápices de colores x12', cantidad: 1, precioUnitario: 2250 }
-    ],
-    notas: ''
-  },
-  {
-    retiro: '#1046',
-    cliente: 'Lucía Fernández',
-    telefono: '381 467-9031',
-    fecha: '06/10/2026',
-    detalle: 'Impresión color',
-    estado: 'En preparación',
-    items: [
-      { producto: 'Impresión color A4', cantidad: 10, precioUnitario: 230 }
-    ],
-    notas: 'Papel ilustración 150g.'
-  },
-  {
-    retiro: '#1045',
-    cliente: 'Joaquín Pérez',
-    telefono: '381 430-7764',
-    fecha: '05/10/2026',
-    detalle: 'Resma A4 + carpeta',
-    estado: 'Entregado',
-    items: [
-      { producto: 'Resma A4 80g', cantidad: 1, precioUnitario: 6500 },
-      { producto: 'Carpeta N°3 con anillos', cantidad: 1, precioUnitario: 2400 }
-    ],
-    notas: ''
-  },
-  {
-    retiro: '#1044',
-    cliente: 'Valentina Ruiz',
-    telefono: '381 498-3125',
-    fecha: '05/10/2026',
-    detalle: 'Impresión de apuntes',
-    estado: 'Cancelado',
-    items: [
-      { producto: 'Impresión A4 blanco y negro', cantidad: 40, precioUnitario: 90 }
-    ],
-    notas: 'No retiró el pedido.'
-  }
-];
-
 function PanelAdmin() {
   const navigate = useNavigate();
-  const [pedidos, setPedidos] = useState(pedidosIniciales);
+  const [pedidos, setPedidos] = useState(leerPedidos);
   const [estadoFiltro, setEstadoFiltro] = useState('todos');
   const [busquedaPedido, setBusquedaPedido] = useState('');
   const [pedidoAVer, setPedidoAVer] = useState(null);
   const [pedidoAGestionar, setPedidoAGestionar] = useState(null);
   const [nuevoEstado, setNuevoEstado] = useState('');
   const [periodoVentas, setPeriodoVentas] = useState('dia');
-  const [productos, setProductos] = useState(productosIniciales);
+  const [productos, setProductos] = useState(leerProductos);
   const [busquedaProducto, setBusquedaProducto] = useState('');
   const [categoriaFiltro, setCategoriaFiltro] = useState('todas');
   const [productoAActualizar, setProductoAActualizar] = useState(null);
@@ -180,6 +103,31 @@ function PanelAdmin() {
       navigate('/sesion');
     }
   }, [navigate]);
+
+  useEffect(() => {
+    guardarPedidos(pedidos);
+  }, [pedidos]);
+
+  useEffect(() => {
+    guardarProductos(productos);
+  }, [productos]);
+
+  useEffect(() => {
+    const recargar = () => {
+      setPedidos(leerPedidos());
+      setProductos(leerProductos());
+    };
+
+    window.addEventListener('pedidosActualizados', recargar);
+    window.addEventListener('productosActualizados', recargar);
+    window.addEventListener('storage', recargar);
+
+    return () => {
+      window.removeEventListener('pedidosActualizados', recargar);
+      window.removeEventListener('productosActualizados', recargar);
+      window.removeEventListener('storage', recargar);
+    };
+  }, []);
 
   const hayEntregados = pedidos.some((pedido) => pedido.estado === 'Entregado');
 
