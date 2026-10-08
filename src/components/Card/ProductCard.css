@@ -46,6 +46,11 @@
   color: var(--color-primario-oscuro);
 }
 
+.coki-product-card__stock {
+  margin-left: auto;
+  color: var(--color-texto-suave);
+}
+
 .coki-product-card__cantidad {
   border: var(--borde);
   border-radius: var(--radio-md);

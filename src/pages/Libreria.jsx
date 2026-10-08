@@ -24,6 +24,19 @@ function Libreria() {
   const [busqueda, setBusqueda] = useState('');
   const [paginaActual, setPaginaActual] = useState(1);
   const [aviso, setAviso] = useState('');
+  const [esAdmin, setEsAdmin] = useState(localStorage.getItem('tipoUsuario') === 'admin');
+
+  useEffect(() => {
+    const actualizarSesion = () => setEsAdmin(localStorage.getItem('tipoUsuario') === 'admin');
+
+    window.addEventListener('sesionCambiada', actualizarSesion);
+    window.addEventListener('storage', actualizarSesion);
+
+    return () => {
+      window.removeEventListener('sesionCambiada', actualizarSesion);
+      window.removeEventListener('storage', actualizarSesion);
+    };
+  }, []);
 
   useEffect(() => {
     const actualizar = () => setProductos(leerProductos());
@@ -53,6 +66,10 @@ function Libreria() {
   }
 
   function agregarAlCarrito(producto, cantidad = 1) {
+    if (esAdmin) {
+      return;
+    }
+
     const carrito = JSON.parse(
       localStorage.getItem('coki-carrito') || '[]'
     );
@@ -144,6 +161,7 @@ function Libreria() {
                         precio={producto.precio}
                         stock={producto.stock}
                         onAgregar={(cantidad) => agregarAlCarrito(producto, cantidad)}
+                        puedeComprar={!esAdmin}
                       />
                     </Col>
                   ))}
