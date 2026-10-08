@@ -146,6 +146,12 @@ function ConsultarPedido() {
                       <p className="pedido-resultado__total">
                         Total: {formatearPrecio(calcularTotal(pedido))}
                       </p>
+                      {pedido.notas && (
+                        <div className="pedido-resultado__notas">
+                          <strong>Detalles de impresión:</strong>
+                          <p>{pedido.notas}</p>
+                        </div>
+                      )}
                     </article>
                   ))}
               </Card.Body>

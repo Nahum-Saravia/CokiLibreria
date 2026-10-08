@@ -1,35 +1,29 @@
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
-  Container,
-  Row,
-  Col,
-  Card,
-  Form,
-  Button,
-  Table,
-  Modal,
-  ButtonGroup,
-  InputGroup
+  Container, Row, Col, Card, Form, Button,
+  Table, Modal, ButtonGroup, InputGroup
 } from 'react-bootstrap';
 import './PanelAdmin.css';
-import { useEffect, useState } from 'react';
 import Alerta from '../components/Alerta/alerta';
 import {
-  leerProductos,
-  guardarProductos,
-  leerPedidos,
-  guardarPedidos
+  leerProductos, guardarProductos,
+  leerPedidos, guardarPedidos
 } from '../data/almacenamiento';
 import productosIniciales from '../data/productos';
 import estadosPedido, {
-  claseEstado,
-  formatearPrecio,
-  calcularTotal
+  claseEstado, formatearPrecio, calcularTotal
 } from '../data/estadosPedido';
 
 const STOCK_BAJO = 5;
 
-const categorias = [...new Set(productosIniciales.map((producto) => producto.categoria))];
+const categorias = [
+  ...new Set(
+    productosIniciales.map(
+      (producto) => producto.categoria
+    )
+  )
+];
 
 const TAMANIO_MAXIMO_IMAGEN = 1024 * 1024;
 
@@ -56,6 +50,7 @@ function convertirFecha(texto) {
 function esDelPeriodo(fechaTexto, periodo) {
   const fecha = convertirFecha(fechaTexto);
   const hoy = new Date();
+
   hoy.setHours(0, 0, 0, 0);
 
   if (periodo === 'dia') {
@@ -70,17 +65,24 @@ function esDelPeriodo(fechaTexto, periodo) {
   }
 
   const inicioSemana = new Date(hoy);
-  inicioSemana.setDate(hoy.getDate() - ((hoy.getDay() + 6) % 7));
+
+  inicioSemana.setDate(
+    hoy.getDate() - ((hoy.getDay() + 6) % 7)
+  );
 
   return fecha >= inicioSemana && fecha <= hoy;
 }
 
 function normalizar(texto) {
-  return texto.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
+  return texto
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[̀-ͯ]/g, '');
 }
 
 function PanelAdmin() {
   const navigate = useNavigate();
+
   const [pedidos, setPedidos] = useState(leerPedidos);
   const [estadoFiltro, setEstadoFiltro] = useState('todos');
   const [busquedaPedido, setBusquedaPedido] = useState('');
@@ -129,7 +131,9 @@ function PanelAdmin() {
     };
   }, []);
 
-  const hayEntregados = pedidos.some((pedido) => pedido.estado === 'Entregado');
+  const hayEntregados = pedidos.some(
+    (pedido) => pedido.estado === 'Entregado'
+  );
 
   const avisarSinPedidos = (tipo) => {
     Alerta.fire({
@@ -146,10 +150,16 @@ function PanelAdmin() {
       return;
     }
 
-    setPedidos(pedidos.filter((pedido) => pedido.estado !== 'Entregado'));
+    setPedidos(
+      pedidos.filter(
+        (pedido) => pedido.estado !== 'Entregado'
+      )
+    );
   };
 
-  const hayCancelados = pedidos.some((pedido) => pedido.estado === 'Cancelado');
+  const hayCancelados = pedidos.some(
+    (pedido) => pedido.estado === 'Cancelado'
+  );
 
   const eliminarCancelados = () => {
     if (!hayCancelados) {
@@ -157,7 +167,11 @@ function PanelAdmin() {
       return;
     }
 
-    setPedidos(pedidos.filter((pedido) => pedido.estado !== 'Cancelado'));
+    setPedidos(
+      pedidos.filter(
+        (pedido) => pedido.estado !== 'Cancelado'
+      )
+    );
   };
 
   const abrirGestion = (pedido) => {
@@ -173,14 +187,18 @@ function PanelAdmin() {
           : pedido
       )
     );
+
     setPedidoAGestionar(null);
   };
 
-  const buscado = normalizar(busquedaPedido.trim()).replace('#', '');
+  const buscado = normalizar(
+    busquedaPedido.trim()
+  ).replace('#', '');
 
   const pedidosFiltrados = pedidos.filter((pedido) => {
     const coincideEstado =
-      estadoFiltro === 'todos' || pedido.estado === estadoFiltro;
+      estadoFiltro === 'todos' ||
+      pedido.estado === estadoFiltro;
 
     const coincideBusqueda = normalizar(
       `${pedido.retiro} ${pedido.cliente}`
@@ -199,7 +217,8 @@ function PanelAdmin() {
 
   const pedidosDelPeriodo = pedidos.filter(
     (pedido) =>
-      pedido.estado !== 'Cancelado' && esDelPeriodo(pedido.fecha, periodoVentas)
+      pedido.estado !== 'Cancelado' &&
+      esDelPeriodo(pedido.fecha, periodoVentas)
   );
 
   const ventasDelPeriodo = pedidosDelPeriodo.reduce(
@@ -211,13 +230,18 @@ function PanelAdmin() {
     (producto) => producto.stock <= STOCK_BAJO
   ).length;
 
-  const textoBuscado = normalizar(busquedaProducto.trim());
+  const textoBuscado = normalizar(
+    busquedaProducto.trim()
+  );
 
   const productosFiltrados = productos.filter((producto) => {
     const coincideCategoria =
-      categoriaFiltro === 'todas' || producto.categoria === categoriaFiltro;
+      categoriaFiltro === 'todas' ||
+      producto.categoria === categoriaFiltro;
 
-    const coincideNombre = normalizar(producto.nombre).includes(textoBuscado);
+    const coincideNombre = normalizar(
+      producto.nombre
+    ).includes(textoBuscado);
 
     return coincideCategoria && coincideNombre;
   });
@@ -231,17 +255,27 @@ function PanelAdmin() {
     setProductos(
       productos.map((producto) =>
         producto.id === productoAActualizar.id
-          ? { ...producto, stock: Number(nuevoStock) }
+          ? {
+              ...producto,
+              stock: Number(nuevoStock)
+            }
           : producto
       )
     );
+
     setProductoAActualizar(null);
   };
 
-  const stockValido = nuevoStock !== '' && Number(nuevoStock) >= 0;
+  const stockValido =
+    nuevoStock !== '' &&
+    Number(nuevoStock) >= 0;
 
   const abrirAgregarProducto = () => {
-    setProductoNuevo({ ...productoVacio, categoria: categorias[0] });
+    setProductoNuevo({
+      ...productoVacio,
+      categoria: categorias[0]
+    });
+
     setMostrarAgregar(true);
   };
 
@@ -261,19 +295,24 @@ function PanelAdmin() {
 
     if (archivo.size > TAMANIO_MAXIMO_IMAGEN) {
       evento.target.value = '';
+
       Alerta.fire({
         icon: 'warning',
         title: 'La imagen es muy pesada',
         text: 'Elegí una imagen de hasta 1 MB.',
         confirmButtonText: 'Entendido'
       });
+
       return;
     }
 
     const lector = new FileReader();
 
     lector.onload = () => {
-      setProductoNuevo((anterior) => ({ ...anterior, imagen: lector.result }));
+      setProductoNuevo((anterior) => ({
+        ...anterior,
+        imagen: lector.result
+      }));
     };
 
     lector.readAsDataURL(archivo);
@@ -288,7 +327,13 @@ function PanelAdmin() {
     productoNuevo.imagen !== '';
 
   const guardarProductoNuevo = () => {
-    const nuevoId = Math.max(0, ...productos.map((producto) => producto.id)) + 1;
+    const nuevoId =
+      Math.max(
+        0,
+        ...productos.map(
+          (producto) => producto.id
+        )
+      ) + 1;
 
     setProductos([
       ...productos,
@@ -302,6 +347,7 @@ function PanelAdmin() {
         descripcion: productoNuevo.descripcion.trim()
       }
     ]);
+
     setMostrarAgregar(false);
   };
 
@@ -314,43 +360,29 @@ function PanelAdmin() {
     <main className="admin-page">
       <Container className="admin-container">
         <section className="admin-heading">
-          <p className="admin-kicker">Gestión interna</p>
-          <h1>Panel de administrador</h1>
+          <p className="admin-kicker">
+            Gestión interna
+          </p>
+
+          <h1>
+            Panel de administrador
+          </h1>
         </section>
 
         <Row className="g-3 mb-4">
           <Col xs={12} sm={4}>
             <Card className="admin-stat-card h-100">
               <Card.Body>
-                <span>Pedidos pendientes</span>
-                <strong>{pedidosPendientes}</strong>
-                <small>Requieren atención</small>
-              </Card.Body>
-            </Card>
-          </Col>
+                <span>
+                  Pedidos pendientes
+                </span>
 
-          <Col xs={12} sm={4}>
-            <Card className="admin-stat-card h-100">
-              <Card.Body>
-                <div className="d-flex flex-wrap justify-content-between align-items-center gap-2">
-                  <span>Ventas</span>
-                  <ButtonGroup size="sm" aria-label="Período de ventas">
-                    {periodosVentas.map((periodo) => (
-                      <Button
-                        key={periodo.valor}
-                        type="button"
-                        className="admin-periodo"
-                        active={periodoVentas === periodo.valor}
-                        onClick={() => setPeriodoVentas(periodo.valor)}
-                      >
-                        {periodo.texto}
-                      </Button>
-                    ))}
-                  </ButtonGroup>
-                </div>
-                <strong>{formatearPrecio(ventasDelPeriodo)}</strong>
+                <strong>
+                  {pedidosPendientes}
+                </strong>
+
                 <small>
-                  {pedidosDelPeriodo.length} {pedidosDelPeriodo.length === 1 ? 'pedido' : 'pedidos'} {periodoActual.detalle}
+                  Requieren atención
                 </small>
               </Card.Body>
             </Card>
@@ -359,9 +391,67 @@ function PanelAdmin() {
           <Col xs={12} sm={4}>
             <Card className="admin-stat-card h-100">
               <Card.Body>
-                <span>Productos con poco stock</span>
-                <strong>{productosConPocoStock}</strong>
-                <small>Para reponer</small>
+                <div className="d-flex flex-wrap justify-content-between align-items-center gap-2">
+                  <span>
+                    Ventas
+                  </span>
+
+                  <ButtonGroup
+                    size="sm"
+                    aria-label="Período de ventas"
+                  >
+                    {periodosVentas.map((periodo) => (
+                      <Button
+                        key={periodo.valor}
+                        type="button"
+                        className="admin-periodo"
+                        active={
+                          periodoVentas ===
+                          periodo.valor
+                        }
+                        onClick={() =>
+                          setPeriodoVentas(
+                            periodo.valor
+                          )
+                        }
+                      >
+                        {periodo.texto}
+                      </Button>
+                    ))}
+                  </ButtonGroup>
+                </div>
+
+                <strong>
+                  {formatearPrecio(
+                    ventasDelPeriodo
+                  )}
+                </strong>
+
+                <small>
+                  {pedidosDelPeriodo.length}{' '}
+                  {pedidosDelPeriodo.length === 1
+                    ? 'pedido'
+                    : 'pedidos'}{' '}
+                  {periodoActual.detalle}
+                </small>
+              </Card.Body>
+            </Card>
+          </Col>
+
+          <Col xs={12} sm={4}>
+            <Card className="admin-stat-card h-100">
+              <Card.Body>
+                <span>
+                  Productos con poco stock
+                </span>
+
+                <strong>
+                  {productosConPocoStock}
+                </strong>
+
+                <small>
+                  Para reponer
+                </small>
               </Card.Body>
             </Card>
           </Col>
@@ -371,8 +461,13 @@ function PanelAdmin() {
           <Card.Body>
             <div className="admin-section-header">
               <div>
-                <p className="admin-kicker">Seguimiento</p>
-                <h2>Estado de pedidos</h2>
+                <p className="admin-kicker">
+                  Seguimiento
+                </p>
+
+                <h2>
+                  Estado de pedidos
+                </h2>
               </div>
 
               <div className="d-flex flex-wrap gap-2">
@@ -383,6 +478,7 @@ function PanelAdmin() {
                 >
                   Eliminar entregados
                 </Button>
+
                 <Button
                   type="button"
                   className="admin-primary-button"
@@ -396,14 +492,27 @@ function PanelAdmin() {
             <Row className="g-3 admin-filters">
               <Col xs={12} md={6}>
                 <Form.Group controlId="estado">
-                  <Form.Label>Estado</Form.Label>
+                  <Form.Label>
+                    Estado
+                  </Form.Label>
+
                   <Form.Select
                     value={estadoFiltro}
-                    onChange={(evento) => setEstadoFiltro(evento.target.value)}
+                    onChange={(evento) =>
+                      setEstadoFiltro(
+                        evento.target.value
+                      )
+                    }
                   >
-                    <option value="todos">Todos los estados</option>
+                    <option value="todos">
+                      Todos los estados
+                    </option>
+
                     {estadosPedido.map((estado) => (
-                      <option key={estado.valor} value={estado.valor}>
+                      <option
+                        key={estado.valor}
+                        value={estado.valor}
+                      >
                         {estado.texto}
                       </option>
                     ))}
@@ -413,19 +522,29 @@ function PanelAdmin() {
 
               <Col xs={12} md={6}>
                 <Form.Group controlId="buscarPedido">
-                  <Form.Label>Buscar</Form.Label>
+                  <Form.Label>
+                    Buscar
+                  </Form.Label>
+
                   <Form.Control
                     type="search"
                     placeholder="Cliente o número de retiro"
                     value={busquedaPedido}
-                    onChange={(evento) => setBusquedaPedido(evento.target.value)}
+                    onChange={(evento) =>
+                      setBusquedaPedido(
+                        evento.target.value
+                      )
+                    }
                   />
                 </Form.Group>
               </Col>
             </Row>
 
             <div className="admin-table-wrapper">
-              <Table className="admin-table" responsive>
+              <Table
+                className="admin-table"
+                responsive
+              >
                 <thead>
                   <tr>
                     <th>Retiro</th>
@@ -440,7 +559,10 @@ function PanelAdmin() {
                 <tbody>
                   {pedidosFiltrados.length === 0 && (
                     <tr>
-                      <td colSpan={6} className="text-center py-4">
+                      <td
+                        colSpan={6}
+                        className="text-center py-4"
+                      >
                         No se encontraron pedidos.
                       </td>
                     </tr>
@@ -448,30 +570,56 @@ function PanelAdmin() {
 
                   {pedidosFiltrados.map((pedido) => (
                     <tr key={pedido.retiro}>
-                      <td>{pedido.retiro}</td>
-                      <td>{pedido.cliente}</td>
-                      <td>{pedido.detalle}</td>
+                      <td>
+                        {pedido.retiro}
+                      </td>
+
+                      <td>
+                        {pedido.cliente}
+                      </td>
+
+                      <td>
+                        {pedido.detalle}
+                      </td>
+
                       <td>
                         <span
-                          className={`admin-status admin-status--${claseEstado(pedido.estado)}`}
+                          className={`admin-status admin-status--${claseEstado(
+                            pedido.estado
+                          )}`}
                         >
                           {pedido.estado}
                         </span>
                       </td>
-                      <td>{formatearPrecio(calcularTotal(pedido))}</td>
+
+                      <td>
+                        {formatearPrecio(
+                          calcularTotal(pedido)
+                        )}
+                      </td>
+
                       <td>
                         <div className="d-flex gap-2">
                           <Button
                             type="button"
                             className="admin-table-button"
-                            onClick={() => setPedidoAVer(pedido)}
+                            onClick={() =>
+                              setPedidoAVer(
+                                pedido
+                              )
+                            }
                           >
                             Ver pedido
                           </Button>
+
                           <Button
                             type="button"
                             className="admin-table-button"
-                            onClick={() => abrirGestion(pedido)}
+                            onClick={() =>
+                              abrirGestion(
+                                pedido
+                              )
+                            }
                           >
                             Gestionar
                           </Button>
@@ -489,14 +637,21 @@ function PanelAdmin() {
           <Card.Body>
             <div className="admin-section-header">
               <div>
-                <p className="admin-kicker">Inventario</p>
-                <h2>Stock de librería</h2>
+                <p className="admin-kicker">
+                  Inventario
+                </p>
+
+                <h2>
+                  Stock de librería
+                </h2>
               </div>
 
               <Button
                 type="button"
                 className="admin-primary-button"
-                onClick={abrirAgregarProducto}
+                onClick={
+                  abrirAgregarProducto
+                }
               >
                 Agregar producto
               </Button>
@@ -505,29 +660,51 @@ function PanelAdmin() {
             <Row className="g-3 admin-filters">
               <Col xs={12} md={6}>
                 <Form.Group controlId="buscarProducto">
-                  <Form.Label>Buscar producto</Form.Label>
+                  <Form.Label>
+                    Buscar producto
+                  </Form.Label>
+
                   <Form.Control
                     type="search"
                     placeholder="Nombre del producto"
                     value={busquedaProducto}
-                    onChange={(evento) => setBusquedaProducto(evento.target.value)}
+                    onChange={(evento) =>
+                      setBusquedaProducto(
+                        evento.target.value
+                      )
+                    }
                   />
                 </Form.Group>
               </Col>
 
               <Col xs={12} md={6}>
                 <Form.Group controlId="categoria">
-                  <Form.Label>Categoría</Form.Label>
+                  <Form.Label>
+                    Categoría
+                  </Form.Label>
+
                   <Form.Select
                     value={categoriaFiltro}
-                    onChange={(evento) => setCategoriaFiltro(evento.target.value)}
+                    onChange={(evento) =>
+                      setCategoriaFiltro(
+                        evento.target.value
+                      )
+                    }
                   >
-                    <option value="todas">Todas las categorías</option>
-                    {categorias.map((categoria) => (
-                      <option key={categoria} value={categoria}>
-                        {categoria}
-                      </option>
-                    ))}
+                    <option value="todas">
+                      Todas las categorías
+                    </option>
+
+                    {categorias.map(
+                      (categoria) => (
+                        <option
+                          key={categoria}
+                          value={categoria}
+                        >
+                          {categoria}
+                        </option>
+                      )
+                    )}
                   </Form.Select>
                 </Form.Group>
               </Col>
@@ -541,18 +718,43 @@ function PanelAdmin() {
 
             <Row className="g-3 admin-stock-grid">
               {productosFiltrados.map((producto) => (
-                <Col xs={12} md={6} lg={4} key={producto.id}>
+                <Col
+                  xs={12}
+                  md={6}
+                  lg={4}
+                  key={producto.id}
+                >
                   <article className="admin-product">
-                    <strong>{producto.nombre}</strong>
-                    <span>{producto.categoria}</span>
-                    <b className={producto.stock <= STOCK_BAJO ? 'stock-low' : 'stock-ok'}>
-                      {producto.stock} {producto.stock === 1 ? 'unidad' : 'unidades'}
+                    <strong>
+                      {producto.nombre}
+                    </strong>
+
+                    <span>
+                      {producto.categoria}
+                    </span>
+
+                    <b
+                      className={
+                        producto.stock <=
+                        STOCK_BAJO
+                          ? 'stock-low'
+                          : 'stock-ok'
+                      }
+                    >
+                      {producto.stock}{' '}
+                      {producto.stock === 1
+                        ? 'unidad'
+                        : 'unidades'}
                     </b>
 
                     <Button
                       type="button"
                       className="admin-table-button"
-                      onClick={() => abrirActualizarStock(producto)}
+                      onClick={() =>
+                        abrirActualizarStock(
+                          producto
+                        )
+                      }
                     >
                       Actualizar stock
                     </Button>
@@ -576,7 +778,9 @@ function PanelAdmin() {
 
       <Modal
         show={pedidoAVer !== null}
-        onHide={() => setPedidoAVer(null)}
+        onHide={() =>
+          setPedidoAVer(null)
+        }
         centered
         size="lg"
         contentClassName="admin-modal"
@@ -584,7 +788,10 @@ function PanelAdmin() {
         {pedidoAVer && (
           <>
             <Modal.Header closeButton>
-              <Modal.Title as="h2" className="h4 fw-bold m-0">
+              <Modal.Title
+                as="h2"
+                className="h4 fw-bold m-0"
+              >
                 Pedido {pedidoAVer.retiro}
               </Modal.Title>
             </Modal.Header>
@@ -592,28 +799,55 @@ function PanelAdmin() {
             <Modal.Body>
               <Row className="g-3 mb-4">
                 <Col xs={12} sm={6}>
-                  <p className="admin-modal__dato">Cliente</p>
-                  <p className="fw-bold m-0">{pedidoAVer.cliente}</p>
+                  <p className="admin-modal__dato">
+                    Cliente
+                  </p>
+
+                  <p className="fw-bold m-0">
+                    {pedidoAVer.cliente}
+                  </p>
                 </Col>
+
                 <Col xs={12} sm={6}>
-                  <p className="admin-modal__dato">Teléfono</p>
-                  <p className="fw-bold m-0">{pedidoAVer.telefono}</p>
+                  <p className="admin-modal__dato">
+                    Teléfono
+                  </p>
+
+                  <p className="fw-bold m-0">
+                    {pedidoAVer.telefono ||
+                      'No informado'}
+                  </p>
                 </Col>
+
                 <Col xs={12} sm={6}>
-                  <p className="admin-modal__dato">Fecha</p>
-                  <p className="fw-bold m-0">{pedidoAVer.fecha}</p>
+                  <p className="admin-modal__dato">
+                    Fecha
+                  </p>
+
+                  <p className="fw-bold m-0">
+                    {pedidoAVer.fecha}
+                  </p>
                 </Col>
+
                 <Col xs={12} sm={6}>
-                  <p className="admin-modal__dato">Estado</p>
+                  <p className="admin-modal__dato">
+                    Estado
+                  </p>
+
                   <span
-                    className={`admin-status admin-status--${claseEstado(pedidoAVer.estado)}`}
+                    className={`admin-status admin-status--${claseEstado(
+                      pedidoAVer.estado
+                    )}`}
                   >
                     {pedidoAVer.estado}
                   </span>
                 </Col>
               </Row>
 
-              <Table className="admin-table" responsive>
+              <Table
+                className="admin-table"
+                responsive
+              >
                 <thead>
                   <tr>
                     <th>Producto</th>
@@ -622,26 +856,105 @@ function PanelAdmin() {
                     <th>Subtotal</th>
                   </tr>
                 </thead>
+
                 <tbody>
-                  {pedidoAVer.items.map((item) => (
-                    <tr key={item.producto}>
-                      <td>{item.producto}</td>
-                      <td>{item.cantidad}</td>
-                      <td>{formatearPrecio(item.precioUnitario)}</td>
-                      <td>{formatearPrecio(item.cantidad * item.precioUnitario)}</td>
-                    </tr>
-                  ))}
+                  {pedidoAVer.items.map(
+                    (item, indice) => (
+                      <tr
+                        key={`${item.producto}-${indice}`}
+                      >
+                        <td>
+                          <strong>
+                            {item.producto}
+                          </strong>
+
+                          {item.esImpresion && (
+                            <div className="small mt-2">
+                              <p className="mb-1">
+                                <strong>
+                                  Tipo:
+                                </strong>{' '}
+                                {item.tipoImpresion}
+                              </p>
+
+                              <p className="mb-1">
+                                <strong>
+                                  Papel:
+                                </strong>{' '}
+                                {item.tipoPapel}
+                              </p>
+
+                              <p className="mb-1">
+                                <strong>
+                                  Descripción:
+                                </strong>{' '}
+                                {item.descripcion}
+                              </p>
+
+                              <p className="mb-1">
+                                <strong>
+                                  Archivo:
+                                </strong>{' '}
+
+                                {item.archivoUrl ? (
+                                  <a
+                                    href={item.archivoUrl}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="fw-bold"
+                                  >
+                                    Abrir archivo:{' '}
+                                    {item.archivo}
+                                  </a>
+                                ) : (
+                                  <span>
+                                    {item.archivo ||
+                                      'No disponible'}
+                                  </span>
+                                )}
+                              </p>
+                            </div>
+                          )}
+                        </td>
+
+                        <td>
+                          {item.cantidad}
+                        </td>
+
+                        <td>
+                          {formatearPrecio(
+                            item.precioUnitario
+                          )}
+                        </td>
+
+                        <td>
+                          {formatearPrecio(
+                            item.cantidad *
+                              item.precioUnitario
+                          )}
+                        </td>
+                      </tr>
+                    )
+                  )}
                 </tbody>
               </Table>
 
               <p className="text-end fs-5 fw-bold mt-3 mb-0">
-                Total: {formatearPrecio(calcularTotal(pedidoAVer))}
+                Total:{' '}
+                {formatearPrecio(
+                  calcularTotal(pedidoAVer)
+                )}
               </p>
 
               {pedidoAVer.notas && (
                 <div className="mt-3">
-                  <p className="admin-modal__dato">Notas del cliente</p>
-                  <p className="m-0">{pedidoAVer.notas}</p>
+                  <p className="admin-modal__dato">
+                    Notas del cliente
+                  </p>
+
+                  <p className="m-0">
+                    {pedidoAVer.notas}
+                  </p>
                 </div>
               )}
             </Modal.Body>
@@ -651,34 +964,55 @@ function PanelAdmin() {
 
       <Modal
         show={pedidoAGestionar !== null}
-        onHide={() => setPedidoAGestionar(null)}
+        onHide={() =>
+          setPedidoAGestionar(null)
+        }
         centered
         contentClassName="admin-modal"
       >
         {pedidoAGestionar && (
           <>
             <Modal.Header closeButton>
-              <Modal.Title as="h2" className="h4 fw-bold m-0">
-                Gestionar pedido {pedidoAGestionar.retiro}
+              <Modal.Title
+                as="h2"
+                className="h4 fw-bold m-0"
+              >
+                Gestionar pedido{' '}
+                {pedidoAGestionar.retiro}
               </Modal.Title>
             </Modal.Header>
 
             <Modal.Body>
               <p className="mb-3">
-                Cliente: <strong>{pedidoAGestionar.cliente}</strong>
+                Cliente:{' '}
+                <strong>
+                  {pedidoAGestionar.cliente}
+                </strong>
               </p>
 
               <Form.Group controlId="nuevoEstado">
-                <Form.Label className="fw-bold">Estado del pedido</Form.Label>
+                <Form.Label className="fw-bold">
+                  Estado del pedido
+                </Form.Label>
+
                 <Form.Select
                   value={nuevoEstado}
-                  onChange={(evento) => setNuevoEstado(evento.target.value)}
+                  onChange={(evento) =>
+                    setNuevoEstado(
+                      evento.target.value
+                    )
+                  }
                 >
-                  {estadosPedido.map((estado) => (
-                    <option key={estado.valor} value={estado.valor}>
-                      {estado.texto}
-                    </option>
-                  ))}
+                  {estadosPedido.map(
+                    (estado) => (
+                      <option
+                        key={estado.valor}
+                        value={estado.valor}
+                      >
+                        {estado.texto}
+                      </option>
+                    )
+                  )}
                 </Form.Select>
               </Form.Group>
             </Modal.Body>
@@ -687,10 +1021,13 @@ function PanelAdmin() {
               <Button
                 type="button"
                 className="admin-table-button"
-                onClick={() => setPedidoAGestionar(null)}
+                onClick={() =>
+                  setPedidoAGestionar(null)
+                }
               >
                 Cancelar
               </Button>
+
               <Button
                 type="button"
                 className="admin-primary-button"
@@ -705,30 +1042,45 @@ function PanelAdmin() {
 
       <Modal
         show={productoAActualizar !== null}
-        onHide={() => setProductoAActualizar(null)}
+        onHide={() =>
+          setProductoAActualizar(null)
+        }
         centered
         contentClassName="admin-modal"
       >
         {productoAActualizar && (
           <>
             <Modal.Header closeButton>
-              <Modal.Title as="h2" className="h4 fw-bold m-0">
+              <Modal.Title
+                as="h2"
+                className="h4 fw-bold m-0"
+              >
                 Actualizar stock
               </Modal.Title>
             </Modal.Header>
 
             <Modal.Body>
               <p className="mb-3">
-                Producto: <strong>{productoAActualizar.nombre}</strong>
+                Producto:{' '}
+                <strong>
+                  {productoAActualizar.nombre}
+                </strong>
               </p>
 
               <Form.Group controlId="nuevoStock">
-                <Form.Label className="fw-bold">Unidades en stock</Form.Label>
+                <Form.Label className="fw-bold">
+                  Unidades en stock
+                </Form.Label>
+
                 <Form.Control
                   type="number"
                   min="0"
                   value={nuevoStock}
-                  onChange={(evento) => setNuevoStock(evento.target.value)}
+                  onChange={(evento) =>
+                    setNuevoStock(
+                      evento.target.value
+                    )
+                  }
                 />
               </Form.Group>
             </Modal.Body>
@@ -737,10 +1089,15 @@ function PanelAdmin() {
               <Button
                 type="button"
                 className="admin-table-button"
-                onClick={() => setProductoAActualizar(null)}
+                onClick={() =>
+                  setProductoAActualizar(
+                    null
+                  )
+                }
               >
                 Cancelar
               </Button>
+
               <Button
                 type="button"
                 className="admin-primary-button"
@@ -756,12 +1113,17 @@ function PanelAdmin() {
 
       <Modal
         show={mostrarAgregar}
-        onHide={() => setMostrarAgregar(false)}
+        onHide={() =>
+          setMostrarAgregar(false)
+        }
         centered
         contentClassName="admin-modal"
       >
         <Modal.Header closeButton>
-          <Modal.Title as="h2" className="h4 fw-bold m-0">
+          <Modal.Title
+            as="h2"
+            className="h4 fw-bold m-0"
+          >
             Agregar producto
           </Modal.Title>
         </Modal.Header>
@@ -770,45 +1132,68 @@ function PanelAdmin() {
           <Row className="g-3">
             <Col xs={12}>
               <Form.Group controlId="nombreProducto">
-                <Form.Label className="fw-bold">Nombre</Form.Label>
+                <Form.Label className="fw-bold">
+                  Nombre
+                </Form.Label>
+
                 <Form.Control
                   type="text"
                   name="nombre"
                   placeholder="Ej: Regla 30 cm"
                   value={productoNuevo.nombre}
-                  onChange={cambiarProductoNuevo}
+                  onChange={
+                    cambiarProductoNuevo
+                  }
                 />
               </Form.Group>
             </Col>
 
             <Col xs={12}>
               <Form.Group controlId="categoriaProducto">
-                <Form.Label className="fw-bold">Categoría</Form.Label>
+                <Form.Label className="fw-bold">
+                  Categoría
+                </Form.Label>
+
                 <Form.Select
                   name="categoria"
                   value={productoNuevo.categoria}
-                  onChange={cambiarProductoNuevo}
+                  onChange={
+                    cambiarProductoNuevo
+                  }
                 >
-                  {categorias.map((categoria) => (
-                    <option key={categoria} value={categoria}>
-                      {categoria}
-                    </option>
-                  ))}
+                  {categorias.map(
+                    (categoria) => (
+                      <option
+                        key={categoria}
+                        value={categoria}
+                      >
+                        {categoria}
+                      </option>
+                    )
+                  )}
                 </Form.Select>
               </Form.Group>
             </Col>
 
             <Col xs={6}>
               <Form.Group controlId="precioProducto">
-                <Form.Label className="fw-bold">Precio</Form.Label>
+                <Form.Label className="fw-bold">
+                  Precio
+                </Form.Label>
+
                 <InputGroup>
-                  <InputGroup.Text className="admin-modal__prefijo">$</InputGroup.Text>
+                  <InputGroup.Text className="admin-modal__prefijo">
+                    $
+                  </InputGroup.Text>
+
                   <Form.Control
                     type="number"
                     min="0"
                     name="precio"
                     value={productoNuevo.precio}
-                    onChange={cambiarProductoNuevo}
+                    onChange={
+                      cambiarProductoNuevo
+                    }
                   />
                 </InputGroup>
               </Form.Group>
@@ -816,40 +1201,56 @@ function PanelAdmin() {
 
             <Col xs={6}>
               <Form.Group controlId="stockProducto">
-                <Form.Label className="fw-bold">Stock</Form.Label>
+                <Form.Label className="fw-bold">
+                  Stock
+                </Form.Label>
+
                 <Form.Control
                   type="number"
                   min="0"
                   name="stock"
                   value={productoNuevo.stock}
-                  onChange={cambiarProductoNuevo}
+                  onChange={
+                    cambiarProductoNuevo
+                  }
                 />
               </Form.Group>
             </Col>
 
             <Col xs={12}>
               <Form.Group controlId="descripcionProducto">
-                <Form.Label className="fw-bold">Descripción</Form.Label>
+                <Form.Label className="fw-bold">
+                  Descripción
+                </Form.Label>
+
                 <Form.Control
                   as="textarea"
                   rows={2}
                   name="descripcion"
                   placeholder="Ej: Regla de plástico transparente con graduación en cm."
                   value={productoNuevo.descripcion}
-                  onChange={cambiarProductoNuevo}
+                  onChange={
+                    cambiarProductoNuevo
+                  }
                 />
               </Form.Group>
             </Col>
 
             <Col xs={12}>
               <Form.Group controlId="imagenProducto">
-                <Form.Label className="fw-bold">Imagen</Form.Label>
+                <Form.Label className="fw-bold">
+                  Imagen
+                </Form.Label>
+
                 <Form.Control
                   type="file"
                   accept="image/*"
                   onChange={cambiarImagen}
                 />
-                <Form.Text>Formato JPG o PNG, de hasta 1 MB.</Form.Text>
+
+                <Form.Text>
+                  Formato JPG o PNG, de hasta 1 MB.
+                </Form.Text>
               </Form.Group>
 
               {productoNuevo.imagen && (
@@ -867,10 +1268,13 @@ function PanelAdmin() {
           <Button
             type="button"
             className="admin-table-button"
-            onClick={() => setMostrarAgregar(false)}
+            onClick={() =>
+              setMostrarAgregar(false)
+            }
           >
             Cancelar
           </Button>
+
           <Button
             type="button"
             className="admin-primary-button"
@@ -886,3 +1290,4 @@ function PanelAdmin() {
 }
 
 export default PanelAdmin;
+

@@ -120,3 +120,93 @@
 .sesion-back {
   margin-top: var(--esp-lg);
 }
+
+.sesion-requisitos {
+  margin: 0 0 var(--esp-md);
+  padding: var(--esp-sm) var(--esp-md);
+  background-color: rgba(47, 42, 86, 0.06);
+  border-left: 4px solid var(--color-acento);
+  border-radius: var(--radio-sm);
+  color: var(--color-texto-suave);
+  font-size: 0.9rem;
+  line-height: 1.45;
+}
+
+.sesion-requisitos p {
+  margin: 0 0 var(--esp-xs);
+  color: var(--color-tinta);
+  font-weight: 800;
+}
+
+.sesion-requisitos ul {
+  margin: 0;
+  padding-left: 1.2rem;
+}
+
+.sesion-requisitos li {
+  margin-bottom: 0.1rem;
+}
+
+.sesion-link-button {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--color-sobre-fondo);
+  font-family: var(--fuente-texto);
+  font-weight: 800;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.sesion-link-button:hover,
+.sesion-link-button:focus {
+  color: #fff;
+}
+
+.sesion-password-wrapper {
+  position: relative;
+}
+
+.sesion-password-input {
+  padding-right: 3rem;
+}
+
+.sesion-password-toggle {
+  position: absolute;
+  top: 50%;
+  right: 0.7rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--color-tinta);
+  transform: translateY(-50%);
+  cursor: pointer;
+}
+
+.sesion-password-toggle:hover,
+.sesion-password-toggle:focus {
+  color: var(--color-primario);
+}
+
+.sesion-password-toggle:focus-visible {
+  outline: 2px solid var(--color-primario);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+.sesion-input {
+  background-color: #fff !important;
+  color: var(--color-tinta);
+}
+
+.sesion-input:focus {
+  background-color: #fff !important;
+  color: var(--color-tinta);
+  border-color: var(--color-primario);
+  box-shadow: 0 0 0 0.2rem rgba(222, 84, 153, 0.2);
+}

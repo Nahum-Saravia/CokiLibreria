@@ -13,6 +13,7 @@ import logo from '../../assets/img/coki-logo.png';
 import casa from '../../assets/img/casa.png';
 import './Navbar.css';
 import CartPanel from '../Cart/CartPanel';
+import Alerta from '../Alerta/alerta';
 
 function Navbar() {
   const navigate = useNavigate();
@@ -37,7 +38,7 @@ function Navbar() {
     };
   }, []);
 
-    const calcularCantidadCarrito = () => {
+  const calcularCantidadCarrito = () => {
     const guardado = localStorage.getItem('coki-carrito');
 
     if (!guardado) {
@@ -86,16 +87,36 @@ function Navbar() {
     };
   }, []);
 
+  const cerrarSesion = async () => {
+    const resultado = await Alerta.fire({
+      icon: 'warning',
+      title: '¿Estás seguro de querer cerrar sesión?',
+      showCancelButton: true,
+      confirmButtonText: 'Sí',
+      cancelButtonText: 'Cancelar',
+      reverseButtons: true
+    });
 
-  const cerrarSesion = () => {
+    if (!resultado.isConfirmed) {
+      return;
+    }
+
     localStorage.removeItem('tipoUsuario');
     window.dispatchEvent(new Event('sesionCambiada'));
+
+    await Alerta.fire({
+      icon: 'success',
+      title: 'Sesión cerrada',
+      text: 'Cerraste sesión correctamente.'
+    });
+
     navigate('/sesion');
   };
 
-
   const esAdmin = tipoUsuario === 'admin';
-  const estaLogueado = tipoUsuario === 'admin' || tipoUsuario === 'cliente';
+
+  const estaLogueado =
+    tipoUsuario === 'admin' || tipoUsuario === 'cliente';
 
   return (
     <BsNavbar
@@ -113,12 +134,21 @@ function Navbar() {
               variant="light"
               className="d-flex align-items-center gap-2"
             >
-              <img src={casa} alt="" width="20" height="20" />
+              <img
+                src={casa}
+                alt=""
+                width="20"
+                height="20"
+              />
               Volver al inicio
             </Button>
 
             {!estaLogueado && (
-              <Button as={Link} to="/sesion" variant="primary">
+              <Button
+                as={Link}
+                to="/sesion"
+                variant="primary"
+              >
                 Iniciar sesión
               </Button>
             )}
@@ -135,7 +165,7 @@ function Navbar() {
 
                 <Button
                   type="button"
-                  variant="outline-primary"
+                  variant="primary"
                   onClick={cerrarSesion}
                 >
                   Cerrar sesión
@@ -203,17 +233,22 @@ function Navbar() {
                   aria-label="Secciones principales"
                   className="d-none d-lg-flex flex-row align-items-center gap-1 p-1 rounded-pill coki-navbar__links"
                 >
-                  {secciones.map((seccion) => (
-                    <Nav.Link
-                      key={seccion.id}
-                      as={Link}
-                      to={seccion.link}
-                      eventKey={seccion.link}
-                      className="fw-bold px-3 rounded-pill"
-                    >
-                      {seccion.texto}
-                    </Nav.Link>
-                  ))}
+                  {secciones
+                    .filter(
+                      (seccion) =>
+                        !esAdmin || seccion.link !== '/pedidos'
+                    )
+                    .map((seccion) => (
+                      <Nav.Link
+                        key={seccion.id}
+                        as={Link}
+                        to={seccion.link}
+                        eventKey={seccion.link}
+                        className="fw-bold px-3 rounded-pill"
+                      >
+                        {seccion.texto}
+                      </Nav.Link>
+                    ))}
 
                   {!esAdmin && (
                     <Button
@@ -221,7 +256,9 @@ function Navbar() {
                       variant="link"
                       aria-label="Ver carrito"
                       className="d-inline-flex text-reset rounded-pill px-3 coki-navbar__carrito"
-                      onClick={() => setCarritoAbierto(true)}
+                      onClick={() =>
+                        setCarritoAbierto(true)
+                      }
                     >
                       <CartIcon cantidad={cantidadCarrito} />
                     </Button>
@@ -233,17 +270,22 @@ function Navbar() {
                   aria-label="Menú móvil"
                   className="d-lg-none flex-column gap-1"
                 >
-                  {secciones.map((seccion) => (
-                    <Nav.Link
-                      key={seccion.id}
-                      as={Link}
-                      to={seccion.link}
-                      eventKey={seccion.link}
-                      className="fw-bold px-3 rounded-3"
-                    >
-                      {seccion.texto}
-                    </Nav.Link>
-                  ))}
+                  {secciones
+                    .filter(
+                      (seccion) =>
+                        !esAdmin || seccion.link !== '/pedidos'
+                    )
+                    .map((seccion) => (
+                      <Nav.Link
+                        key={seccion.id}
+                        as={Link}
+                        to={seccion.link}
+                        eventKey={seccion.link}
+                        className="fw-bold px-3 rounded-3"
+                      >
+                        {seccion.texto}
+                      </Nav.Link>
+                    ))}
 
                   <hr className="my-2" />
 
@@ -304,7 +346,9 @@ function Navbar() {
                     <Button
                       type="button"
                       variant="link"
-                      onClick={() => setCarritoAbierto(true)}
+                      onClick={() =>
+                        setCarritoAbierto(true)
+                      }
                       className="d-flex align-items-center gap-3 fw-bold text-reset text-decoration-none px-3 rounded-3 coki-offcanvas__carrito"
                     >
                       <CartIcon cantidad={cantidadCarrito} />
@@ -317,15 +361,13 @@ function Navbar() {
           </Col>
         </Row>
       </Container>
-      {!esAdmin && (
-        <CartPanel
-          abierto={carritoAbierto}
-          onCerrar={() => setCarritoAbierto(false)}
-        />
-      )}
+
+      <CartPanel
+        abierto={carritoAbierto}
+        onCerrar={() => setCarritoAbierto(false)}
+      />
     </BsNavbar>
   );
 }
 
 export default Navbar;
-
