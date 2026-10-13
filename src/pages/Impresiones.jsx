@@ -232,7 +232,7 @@ function Impresiones() {
 
           <Card
             as="form"
-            className="coki-impresiones"
+            className="coki-impresiones coki-panel"
             onSubmit={agregarAlCarrito}
           >
             <Card.Body className="p-3 p-md-4">

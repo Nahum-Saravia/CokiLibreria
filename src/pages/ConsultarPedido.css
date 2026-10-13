@@ -3,43 +3,25 @@
   padding: var(--esp-xl) 0;
 }
 
-.pedido-container {
-  padding-top: var(--esp-md);
-}
-
 .pedido-header {
-  text-align: center;
   color: var(--color-sobre-fondo);
-  margin-bottom: var(--esp-lg);
 }
 
 .pedido-header h1 {
   font-size: 2.5rem;
-  margin: var(--esp-lg) 0 var(--esp-sm);
 }
 
 .pedido-header p {
-  margin: 0;
-  font-weight: 600;
   font-size: 1.05rem;
 }
 
 .pedido-back {
-  display: inline-block;
   color: var(--color-sobre-fondo);
   font-weight: 800;
-  text-decoration: none;
 }
 
 .pedido-back:hover {
   color: #fff;
-}
-
-.pedido-card {
-  background-color: var(--color-superficie);
-  border: var(--borde);
-  border-radius: var(--radio-lg);
-  box-shadow: var(--sombra-dura);
 }
 
 .pedido-card h2 {
@@ -65,13 +47,8 @@
   box-shadow: 0 0 0 0.2rem rgba(222, 84, 153, 0.2);
 }
 
+/* El resto del estilo viene de .btn-primary (index.css) */
 .pedido-button {
-  background-color: var(--color-primario);
-  border: var(--borde);
-  border-radius: var(--radio-md);
-  box-shadow: var(--sombra-dura-sm);
-  color: #fff;
-  font-weight: 800;
   padding: 0.65rem 1.4rem;
 }
 
@@ -84,82 +61,22 @@
 }
 
 .pedido-resultado {
-  margin-top: var(--esp-lg);
-  padding: var(--esp-md);
   background-color: var(--color-superficie-alt);
   border: var(--borde);
   border-radius: var(--radio-md);
   color: var(--color-tinta);
-  font-weight: 700;
-}
-.pedido-resultado__encabezado {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
-  align-items: flex-start;
-  gap: var(--esp-sm);
-  margin-bottom: var(--esp-md);
-}
-
-.pedido-resultado__encabezado h3 {
-  font-size: 1.25rem;
-  margin: 0;
 }
 
 .pedido-resultado__fecha {
-  margin: 0;
-  font-weight: 600;
   color: var(--color-texto-suave);
 }
 
-.pedido-resultado__items {
-  list-style: none;
-  padding: 0;
-  margin: 0 0 var(--esp-md);
-}
-
 .pedido-resultado__items li {
-  display: flex;
-  justify-content: space-between;
-  gap: var(--esp-sm);
   padding: 0.35rem 0;
   border-bottom: 1px solid rgba(0, 0, 0, 0.1);
-  font-weight: 600;
 }
 
 .pedido-resultado__total {
-  margin: 0;
-  text-align: right;
   font-size: 1.1rem;
   font-weight: 800;
-}
-
-.pedido-estado {
-  display: inline-block;
-  border: 2px solid var(--color-borde);
-  border-radius: 999px;
-  padding: 0.25rem 0.6rem;
-  font-size: 0.82rem;
-  font-weight: 800;
-  white-space: nowrap;
-}
-
-.pedido-estado--pendiente {
-  background-color: #f6d58a;
-}
-
-.pedido-estado--preparacion {
-  background-color: #a9d8e8;
-}
-
-.pedido-estado--listo {
-  background-color: #9ed9a2;
-}
-
-.pedido-estado--entregado {
-  background-color: #d9d3ee;
-}
-
-.pedido-estado--cancelado {
-  background-color: #f2b8b5;
 }

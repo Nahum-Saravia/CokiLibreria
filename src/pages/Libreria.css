@@ -1,9 +1,5 @@
 .coki-libreria {
   color: var(--color-tinta);
-  background-color: var(--color-superficie);
-  border: var(--borde);
-  border-radius: var(--radio-lg);
-  box-shadow: var(--sombra-dura);
 }
 
 .coki-libreria .form-control {
@@ -25,13 +21,36 @@
 }
 
 .coki-paginacion {
-  --bs-pagination-color: var(--color-tinta);
+  --bs-pagination-color: #fff;
+  --bs-pagination-bg: var(--color-fondo);
   --bs-pagination-border-width: 2px;
   --bs-pagination-border-color: var(--color-borde);
+  --bs-pagination-hover-color: #fff;
+  --bs-pagination-hover-bg: var(--color-fondo-oscuro);
+  --bs-pagination-hover-border-color: var(--color-borde);
+  --bs-pagination-focus-color: #fff;
+  --bs-pagination-focus-bg: var(--color-fondo-oscuro);
+  --bs-pagination-focus-box-shadow: 0 0 0 0.2rem rgba(222, 84, 153, 0.35);
+  --bs-pagination-active-color: #fff;
   --bs-pagination-active-bg: var(--color-primario);
   --bs-pagination-active-border-color: var(--color-borde);
-  --bs-pagination-hover-color: var(--color-tinta);
+  --bs-pagination-disabled-color: var(--color-texto-suave);
+  --bs-pagination-disabled-bg: var(--color-superficie-alt);
+  --bs-pagination-disabled-border-color: var(--color-borde);
   font-weight: 800;
+}
+
+/* Cada número como un botón suelto, con el mismo estilo que el resto del sitio */
+.coki-paginacion .page-link {
+  min-width: 2.5rem;
+  text-align: center;
+  border-radius: var(--radio-md) !important;
+  box-shadow: var(--sombra-dura-sm);
+}
+
+.coki-paginacion .page-item.disabled .page-link {
+  opacity: 0.6;
+  box-shadow: none;
 }
 
 .coki-aviso {

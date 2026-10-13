@@ -534,7 +534,7 @@ function CartPanel({
   return (
     <>
       <aside
-        className={`coki-cart-panel ${
+        className={`coki-cart-panel position-fixed top-0 bottom-0 start-0 end-0 ${
           abierto
             ? 'is-open'
             : ''
@@ -543,25 +543,25 @@ function CartPanel({
         aria-hidden={!abierto}
       >
         <div
-          className="coki-cart-panel__backdrop"
+          className="coki-cart-panel__backdrop position-absolute top-0 bottom-0 start-0 end-0"
           onClick={onCerrar}
           aria-hidden="true"
         />
 
         <div
-          className="coki-cart-panel__content"
+          className="coki-cart-panel__content position-absolute top-0 end-0 h-100 bg-white d-flex flex-column"
           role="dialog"
           aria-modal="true"
           aria-labelledby="cokiCartTitle"
         >
-          <header className="coki-cart-panel__header">
-            <h2 id="cokiCartTitle">
+          <header className="coki-cart-panel__header d-flex align-items-center justify-content-between gap-3">
+            <h2 id="cokiCartTitle" className="m-0">
               Tu carrito
             </h2>
 
             <button
               type="button"
-              className="coki-cart-panel__close"
+              className="coki-cart-panel__close border-0 bg-transparent lh-1 px-2 py-1"
               onClick={onCerrar}
               aria-label="Cerrar carrito"
             >
@@ -569,25 +569,25 @@ function CartPanel({
             </button>
           </header>
 
-          <div className="coki-cart-panel__body">
+          <div className="coki-cart-panel__body overflow-y-auto p-3">
             {carrito.length ===
             0 ? (
-              <p className="coki-cart-panel__empty">
+              <p className="coki-cart-panel__empty m-0 text-center py-5 px-3 fw-bold">
                 Tu carrito está vacío.
               </p>
             ) : (
               carrito.map(
                 (item) => (
                   <article
-                    className="coki-cart-item"
+                    className="coki-cart-item d-flex flex-column gap-3 py-3"
                     key={item.id}
                   >
                     <div>
-                      <h3>
+                      <h3 className="fs-6">
                         {item.nombre}
                       </h3>
 
-                      <p>
+                      <p className="m-0 fw-semibold">
                         {item.cantidad} x{' '}
                         {formatearPrecio(
                           item.precio
@@ -655,8 +655,9 @@ function CartPanel({
                       )}
                     </div>
 
-                    <div className="coki-cart-item__controls">
+                    <div className="coki-cart-item__controls d-flex flex-wrap align-items-stretch align-items-sm-center gap-2">
                       <Form.Label
+                        className="w-100 fw-bold"
                         htmlFor={`cartRemoveQuantity-${item.id}`}
                       >
                         Quitar
@@ -664,7 +665,7 @@ function CartPanel({
 
                       <Form.Control
                         id={`cartRemoveQuantity-${item.id}`}
-                        className="coki-cart-item__quantity"
+                        className="coki-cart-item__quantity fw-bold"
                         type="number"
                         min="1"
                         max={
@@ -688,7 +689,7 @@ function CartPanel({
 
                       <Button
                         type="button"
-                        className="coki-cart-item__remove"
+                        className="coki-cart-item__remove border-0 rounded-3 fw-bold"
                         onClick={() =>
                           quitarCantidad(
                             item.id
@@ -700,7 +701,7 @@ function CartPanel({
 
                       <Button
                         type="button"
-                        className="coki-cart-item__remove-all"
+                        className="coki-cart-item__remove-all border-0 rounded-3 fw-bold text-white"
                         onClick={() =>
                           quitarTodo(
                             item.id
@@ -716,8 +717,8 @@ function CartPanel({
             )}
           </div>
 
-          <footer className="coki-cart-panel__footer">
-            <div className="coki-cart-panel__total">
+          <footer className="coki-cart-panel__footer bg-white">
+            <div className="coki-cart-panel__total d-flex justify-content-between align-items-center gap-3 mb-3">
               <span>
                 Total
               </span>
@@ -729,10 +730,10 @@ function CartPanel({
               </strong>
             </div>
 
-            <div className="coki-cart-panel__actions">
+            <div className="coki-cart-panel__actions d-flex flex-column">
               <Button
                 type="button"
-                className="coki-cart-panel__confirm"
+                className="coki-cart-panel__confirm w-100 border-0 rounded-3 fw-bold"
                 onClick={
                   confirmarPedido
                 }
@@ -746,7 +747,7 @@ function CartPanel({
 
               <Button
                 type="button"
-                className="coki-cart-panel__clear"
+                className="coki-cart-panel__clear w-100 border-0 rounded-3 text-white"
                 onClick={() => {
                   if (
                     carrito.length >
@@ -771,11 +772,11 @@ function CartPanel({
 
       {mostrarConfirmacion && (
         <div
-          className="coki-cart-confirm is-open"
+          className="coki-cart-confirm position-fixed top-0 bottom-0 start-0 end-0 d-flex align-items-center justify-content-center p-3"
           aria-hidden="false"
         >
           <div
-            className="coki-cart-confirm__backdrop"
+            className="coki-cart-confirm__backdrop position-absolute top-0 bottom-0 start-0 end-0"
             onClick={() =>
               setMostrarConfirmacion(
                 false
@@ -784,19 +785,19 @@ function CartPanel({
           />
 
           <div
-            className="coki-cart-confirm__content"
+            className="coki-cart-confirm__content position-relative bg-white p-4 text-center"
             role="alertdialog"
             aria-modal="true"
             aria-labelledby="cokiCartConfirmTitle"
           >
             <div
-              className="coki-cart-confirm__icon"
+              className="coki-cart-confirm__icon mx-auto mb-3 d-flex align-items-center justify-content-center rounded-circle"
               aria-hidden="true"
             >
               !
             </div>
 
-            <h2 id="cokiCartConfirmTitle">
+            <h2 id="cokiCartConfirmTitle" className="mb-2">
               ¿Borrar carrito?
             </h2>
 
@@ -805,10 +806,10 @@ function CartPanel({
               productos que agregaste.
             </p>
 
-            <div className="coki-cart-confirm__actions">
+            <div className="coki-cart-confirm__actions d-flex flex-column flex-sm-row justify-content-center">
               <Button
                 type="button"
-                className="coki-cart-confirm__cancel"
+                className="coki-cart-confirm__cancel border-0 rounded-3"
                 onClick={() =>
                   setMostrarConfirmacion(
                     false
@@ -820,7 +821,7 @@ function CartPanel({
 
               <Button
                 type="button"
-                className="coki-cart-confirm__accept"
+                className="coki-cart-confirm__accept border-0 rounded-3 text-white"
                 onClick={
                   borrarCarrito
                 }
