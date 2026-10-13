@@ -4,6 +4,8 @@ import pedidosIniciales from './pedidos';
 const CLAVE_PRODUCTOS = 'coki-productos';
 const CLAVE_PEDIDOS = 'coki-pedidos';
 const CLAVE_CARRITO = 'coki-carrito';
+const CLAVE_USUARIOS = 'coki-usuarios';
+const CLAVE_USUARIO_ACTUAL = 'coki-usuario-actual';
 
 function leer(clave, valorInicial) {
   const guardado = localStorage.getItem(clave);
@@ -18,6 +20,131 @@ function leer(clave, valorInicial) {
     localStorage.removeItem(clave);
     return valorInicial;
   }
+}
+
+// Usuarios y sesión
+
+function leerUsuarios() {
+  return leer(CLAVE_USUARIOS, []);
+}
+
+function normalizarCorreo(correo) {
+  return correo.trim().toLowerCase();
+}
+
+export function registrarUsuario(nombre, correo, contrasena) {
+  const usuarios = leerUsuarios();
+  const correoNormalizado = normalizarCorreo(correo);
+
+  if (usuarios.some((usuario) => usuario.correo === correoNormalizado)) {
+    return { error: 'Ya existe una cuenta con ese correo electrónico.' };
+  }
+
+  localStorage.setItem(
+    CLAVE_USUARIOS,
+    JSON.stringify([
+      ...usuarios,
+      { nombre: nombre.trim(), correo: correoNormalizado, contrasena }
+    ])
+  );
+
+  return { ok: true };
+}
+
+export function validarUsuario(correo, contrasena) {
+  const correoNormalizado = normalizarCorreo(correo);
+  const usuario = leerUsuarios().find((item) => item.correo === correoNormalizado);
+
+  if (!usuario) {
+    return { error: 'No existe una cuenta con ese correo. Registrate primero.' };
+  }
+
+  if (usuario.contrasena !== contrasena) {
+    return { error: 'La contraseña es incorrecta.' };
+  }
+
+  return { ok: true };
+}
+
+// Devuelve { nombre, correo } del cliente logueado, o null si no hay ninguno
+export function obtenerUsuarioActual() {
+  const correo = localStorage.getItem(CLAVE_USUARIO_ACTUAL);
+
+  if (!correo) {
+    return null;
+  }
+
+  const usuario = leerUsuarios().find((item) => item.correo === correo);
+
+  return { nombre: usuario?.nombre || '', correo };
+}
+
+// Cuenta fija del administrador
+const ADMIN_CORREO = 'cokilibreria@gmail.com';
+const ADMIN_CONTRASENA = 'cokiI1256';
+
+export function validarAdmin(correo, contrasena) {
+  return (
+    normalizarCorreo(correo) === ADMIN_CORREO &&
+    contrasena === ADMIN_CONTRASENA
+  );
+}
+
+// Si se pasa un nombre, queda guardado en la cuenta para usarlo en los pedidos
+export function iniciarSesion(tipoUsuario, correo = '', nombre = '') {
+  localStorage.setItem('tipoUsuario', tipoUsuario);
+
+  if (correo) {
+    const correoNormalizado = normalizarCorreo(correo);
+
+    localStorage.setItem(CLAVE_USUARIO_ACTUAL, correoNormalizado);
+
+    if (nombre.trim()) {
+      localStorage.setItem(
+        CLAVE_USUARIOS,
+        JSON.stringify(
+          leerUsuarios().map((usuario) =>
+            usuario.correo === correoNormalizado
+              ? { ...usuario, nombre: nombre.trim() }
+              : usuario
+          )
+        )
+      );
+    }
+  } else {
+    localStorage.removeItem(CLAVE_USUARIO_ACTUAL);
+  }
+
+  window.dispatchEvent(new Event('sesionCambiada'));
+  window.dispatchEvent(new Event('carritoActualizado'));
+}
+
+export function cerrarSesion() {
+  localStorage.removeItem('tipoUsuario');
+  localStorage.removeItem(CLAVE_USUARIO_ACTUAL);
+
+  window.dispatchEvent(new Event('sesionCambiada'));
+  window.dispatchEvent(new Event('carritoActualizado'));
+}
+
+// Carrito: cada cliente tiene el suyo; sin sesión se usa el carrito de invitado
+
+function claveCarrito() {
+  const usuario = localStorage.getItem(CLAVE_USUARIO_ACTUAL);
+  return usuario ? `${CLAVE_CARRITO}-${usuario}` : CLAVE_CARRITO;
+}
+
+export function leerCarrito() {
+  return leer(claveCarrito(), []);
+}
+
+// Puede lanzar si el carrito no entra en localStorage (por ejemplo, archivos grandes)
+export function guardarCarrito(carrito) {
+  localStorage.setItem(claveCarrito(), JSON.stringify(carrito));
+}
+
+export function vaciarCarrito() {
+  localStorage.removeItem(claveCarrito());
 }
 
 export function leerProductos() {
@@ -72,7 +199,7 @@ function siguienteNumeroRetiro(pedidos) {
 }
 
 export function crearPedido({ cliente, telefono, notas }) {
-  const carrito = leer(CLAVE_CARRITO, []);
+  const carrito = leerCarrito();
 
   if (carrito.length === 0) {
     return { error: 'El carrito está vacío.' };
@@ -119,7 +246,7 @@ export function crearPedido({ cliente, telefono, notas }) {
     })
   );
 
-  localStorage.removeItem(CLAVE_CARRITO);
+  vaciarCarrito();
 
   window.dispatchEvent(new Event('carritoActualizado'));
   window.dispatchEvent(new Event('pedidosActualizados'));

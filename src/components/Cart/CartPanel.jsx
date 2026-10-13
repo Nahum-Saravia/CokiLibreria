@@ -4,37 +4,11 @@ import './CartPanel.css';
 import Alerta from '../Alerta/alerta';
 import {
   leerPedidos,
-  guardarPedidos
+  guardarPedidos,
+  leerCarrito,
+  guardarCarrito,
+  obtenerUsuarioActual
 } from '../../data/almacenamiento';
-
-const CLAVE_CARRITO = 'coki-carrito';
-
-function leerCarrito() {
-  const guardado =
-    localStorage.getItem(
-      CLAVE_CARRITO
-    );
-
-  if (!guardado) {
-    return [];
-  }
-
-  try {
-    return JSON.parse(guardado);
-  } catch {
-    localStorage.removeItem(
-      CLAVE_CARRITO
-    );
-    return [];
-  }
-}
-
-function guardarCarrito(carrito) {
-  localStorage.setItem(
-    CLAVE_CARRITO,
-    JSON.stringify(carrito)
-  );
-}
 
 function formatearPrecio(precio) {
   return (
@@ -367,20 +341,38 @@ function CartPanel({
         return;
       }
 
+      // El nombre sale de la cuenta; solo se pide si la cuenta no lo tiene
+      const nombreCuenta =
+        obtenerUsuarioActual()?.nombre || '';
+
+      const nombreEscapado =
+        nombreCuenta
+          .replace(/&/g, '&amp;')
+          .replace(/"/g, '&quot;')
+          .replace(/</g, '&lt;');
+
       const resultado =
         await Alerta.fire({
           icon: 'question',
           title:
             'Confirmar pedido',
-          text: 'Ingresá tu nombre para confirmar el pedido.',
-          input: 'text',
-          inputLabel:
-            'Nombre y apellido',
-          inputPlaceholder:
-            'Ej: Juan Pérez',
-          inputAttributes: {
-            maxlength: '80',
-            autocomplete: 'name'
+          html: `
+            <p class="coki-alerta__texto">Ingresá tus datos para confirmar el pedido.</p>
+            <label for="pedido-nombre" class="swal2-input-label">Nombre y apellido</label>
+            <input id="pedido-nombre" class="swal2-input" placeholder="Ej: Juan Pérez" maxlength="80" autocomplete="name" value="${nombreEscapado}" ${nombreCuenta ? 'readonly' : ''}>
+            <label for="pedido-telefono" class="swal2-input-label">Teléfono</label>
+            <input id="pedido-telefono" class="swal2-input" type="tel" inputmode="tel" placeholder="Ej: 381 555-1234" maxlength="20" autocomplete="tel">
+          `,
+          focusConfirm:
+            false,
+          didOpen: () => {
+            document
+              .getElementById(
+                nombreCuenta
+                  ? 'pedido-telefono'
+                  : 'pedido-nombre'
+              )
+              .focus();
           },
           showCancelButton:
             true,
@@ -390,17 +382,40 @@ function CartPanel({
             'Cancelar',
           reverseButtons:
             true,
-          inputValidator:
-            (valor) => {
-              if (
-                !valor ||
-                !valor.trim()
-              ) {
-                return 'Ingresá tu nombre para continuar.';
-              }
+          preConfirm: () => {
+            const nombre =
+              document
+                .getElementById('pedido-nombre')
+                .value.trim();
 
-              return null;
+            const telefono =
+              document
+                .getElementById('pedido-telefono')
+                .value.trim();
+
+            if (!nombre) {
+              Alerta.showValidationMessage(
+                'Ingresá tu nombre para continuar.'
+              );
+              return false;
             }
+
+            const digitos =
+              telefono.replace(/\D/g, '');
+
+            if (
+              !/^[\d\s()+-]+$/.test(telefono) ||
+              digitos.length < 8 ||
+              digitos.length > 15
+            ) {
+              Alerta.showValidationMessage(
+                'Ingresá un teléfono válido (solo números, entre 8 y 15 dígitos).'
+              );
+              return false;
+            }
+
+            return { nombre, telefono };
+          }
         });
 
       if (
@@ -409,8 +424,10 @@ function CartPanel({
         return;
       }
 
-      const nombreCliente =
-        resultado.value.trim();
+      const {
+        nombre: nombreCliente,
+        telefono
+      } = resultado.value;
 
       const pedidosActuales =
         leerPedidos();
@@ -424,7 +441,7 @@ function CartPanel({
         retiro,
         cliente:
           nombreCliente,
-        telefono: '',
+        telefono,
         fecha:
           obtenerFechaActual(),
         estado:
