@@ -10,7 +10,11 @@ import Pagination from 'react-bootstrap/Pagination';
 import Toast from 'react-bootstrap/Toast';
 import ToastContainer from 'react-bootstrap/ToastContainer';
 import ProductCard from '../components/Card/ProductCard';
-import { leerProductos } from '../data/almacenamiento';
+import {
+  leerProductos,
+  leerCarrito,
+  guardarCarrito
+} from '../data/almacenamiento';
 import './Libreria.css';
 
 const PRODUCTOS_POR_PAGINA = 6;
@@ -70,9 +74,7 @@ function Libreria() {
       return;
     }
 
-    const carrito = JSON.parse(
-      localStorage.getItem('coki-carrito') || '[]'
-    );
+    const carrito = leerCarrito();
 
     const yaEstaba = carrito.find(
       (item) => item.id === producto.id
@@ -103,10 +105,7 @@ function Libreria() {
       });
     }
 
-    localStorage.setItem(
-      'coki-carrito',
-      JSON.stringify(carrito)
-    );
+    guardarCarrito(carrito);
 
     window.dispatchEvent(new Event('carritoActualizado'));
 

@@ -12,6 +12,10 @@ import {
   tiposPapel
 } from '../data/opcionesImpresion';
 import Alerta from '../components/Alerta/alerta';
+import {
+  leerCarrito,
+  guardarCarrito
+} from '../data/almacenamiento';
 import './Impresiones.css';
 
 function obtenerPrecioImpresion(tipo) {
@@ -140,20 +144,7 @@ function Impresiones() {
       return;
     }
 
-    const guardado =
-      localStorage.getItem(
-        'coki-carrito'
-      );
-
-    let carrito = [];
-
-    if (guardado) {
-      try {
-        carrito = JSON.parse(guardado);
-      } catch {
-        carrito = [];
-      }
-    }
+    const carrito = leerCarrito();
 
     const nuevaImpresion = {
       id: `impresion-${Date.now()}`,
@@ -176,10 +167,7 @@ function Impresiones() {
     carrito.push(nuevaImpresion);
 
     try {
-      localStorage.setItem(
-        'coki-carrito',
-        JSON.stringify(carrito)
-      );
+      guardarCarrito(carrito);
     } catch {
       await Alerta.fire({
         icon: 'error',

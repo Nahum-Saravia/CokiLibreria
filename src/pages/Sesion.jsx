@@ -4,6 +4,12 @@ import { Link, useNavigate } from 'react-router-dom';
 import './Sesion.css';
 import logo from '../assets/img/coki-logo.png';
 import Alerta from '../components/Alerta/alerta';
+import {
+  registrarUsuario,
+  validarUsuario,
+  validarAdmin,
+  iniciarSesion
+} from '../data/almacenamiento';
 
 function Sesion() {
   const [tipoUsuario, setTipoUsuario] = useState('cliente');
@@ -47,6 +53,42 @@ function Sesion() {
   const handleSubmit = async (event) => {
     event.preventDefault();
 
+    const formulario = event.currentTarget;
+    const identificador = formulario.elements.identificador.value.trim();
+
+    const nombre = esAdmin
+      ? ''
+      : formulario.elements.nombre.value.trim();
+
+    if (!esAdmin) {
+      if (nombre.split(/\s+/).length < 2) {
+        await Alerta.fire({
+          icon: 'warning',
+          title: 'Falta el nombre',
+          text: 'Ingresá tu nombre y apellido.'
+        });
+        return;
+      }
+
+      if (!identificador) {
+        await Alerta.fire({
+          icon: 'warning',
+          title: 'Falta el correo',
+          text: 'Ingresá tu correo electrónico.'
+        });
+        return;
+      }
+
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(identificador)) {
+        await Alerta.fire({
+          icon: 'warning',
+          title: 'Correo no válido',
+          text: 'Ingresá un correo electrónico válido.'
+        });
+        return;
+      }
+    }
+
     if (esRegistro) {
       if (!validarContrasena(contrasena)) {
         await Alerta.fire({
@@ -66,10 +108,25 @@ function Sesion() {
         return;
       }
 
+      const registro = registrarUsuario(
+        nombre,
+        identificador,
+        contrasena
+      );
+
+      if (registro.error) {
+        await Alerta.fire({
+          icon: 'error',
+          title: 'No se pudo registrar',
+          text: registro.error
+        });
+        return;
+      }
+
       await Alerta.fire({
         icon: 'success',
         title: 'Registro correcto',
-        text: 'El formulario de registro es válido. Ya podés iniciar sesión.'
+        text: 'Tu cuenta fue creada. Ya podés iniciar sesión.'
       });
 
       setModoRegistro(false);
@@ -81,8 +138,7 @@ function Sesion() {
     }
 
     if (esAdmin) {
-      const formulario = event.currentTarget;
-      const usuario = formulario.elements.identificador.value.trim();
+      const usuario = identificador;
       const password = formulario.elements.password.value;
 
       if (!usuario) {
@@ -112,11 +168,16 @@ function Sesion() {
         return;
       }
 
-      localStorage.setItem('tipoUsuario', 'admin');
+      if (!validarAdmin(usuario, password)) {
+        await Alerta.fire({
+          icon: 'error',
+          title: 'No se pudo iniciar sesión',
+          text: 'El usuario o la contraseña de administrador son incorrectos.'
+        });
+        return;
+      }
 
-      window.dispatchEvent(
-        new Event('sesionCambiada')
-      );
+      iniciarSesion('admin');
 
       await Alerta.fire({
         icon: 'success',
@@ -129,11 +190,18 @@ function Sesion() {
       return;
     }
 
-    localStorage.setItem('tipoUsuario', 'cliente');
+    const acceso = validarUsuario(identificador, contrasena);
 
-    window.dispatchEvent(
-      new Event('sesionCambiada')
-    );
+    if (acceso.error) {
+      await Alerta.fire({
+        icon: 'error',
+        title: 'No se pudo iniciar sesión',
+        text: acceso.error
+      });
+      return;
+    }
+
+    iniciarSesion('cliente', identificador, nombre);
 
     await Alerta.fire({
       icon: 'success',
@@ -221,6 +289,27 @@ function Sesion() {
                         </option>
                       </Form.Select>
                     </Form.Group>
+
+                    {!esAdmin && (
+                      <Form.Group
+                        className="mb-3"
+                        controlId="nombre"
+                      >
+                        <Form.Label>
+                          Nombre y apellido:
+                        </Form.Label>
+
+                        <Form.Control
+                          type="text"
+                          name="nombre"
+                          autoComplete="name"
+                          placeholder="Ej: Juan Pérez"
+                          maxLength={80}
+                          required
+                          className="sesion-input"
+                        />
+                      </Form.Group>
+                    )}
 
                     <Form.Group
                       className="mb-3"

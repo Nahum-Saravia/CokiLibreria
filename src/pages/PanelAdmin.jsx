@@ -8,7 +8,8 @@ import './PanelAdmin.css';
 import Alerta from '../components/Alerta/alerta';
 import {
   leerProductos, guardarProductos,
-  leerPedidos, guardarPedidos
+  leerPedidos, guardarPedidos,
+  cerrarSesion as terminarSesion
 } from '../data/almacenamiento';
 import productosIniciales from '../data/productos';
 import estadosPedido, {
@@ -78,6 +79,49 @@ function normalizar(texto) {
     .toLowerCase()
     .normalize('NFD')
     .replace(/[̀-ͯ]/g, '');
+}
+
+// Los navegadores bloquean abrir un data URL en una pestaña nueva,
+// así que se convierte el archivo a un Blob y se abre ese
+function abrirArchivo(evento, item) {
+  evento.preventDefault();
+
+  try {
+    const [cabecera, datos] = item.archivoUrl.split(',');
+    const tipo =
+      cabecera.match(/^data:([^;]+)/)?.[1] ||
+      item.archivoTipo ||
+      'application/octet-stream';
+
+    const binario = atob(datos);
+    const bytes = new Uint8Array(binario.length);
+
+    for (let i = 0; i < binario.length; i++) {
+      bytes[i] = binario.charCodeAt(i);
+    }
+
+    const url = URL.createObjectURL(
+      new Blob([bytes], { type: tipo })
+    );
+
+    const ventana = window.open(url, '_blank');
+
+    // Si no se pudo abrir (bloqueador de ventanas o tipo no visible), se descarga
+    if (!ventana) {
+      const enlace = document.createElement('a');
+      enlace.href = url;
+      enlace.download = item.archivo || 'archivo';
+      enlace.click();
+    }
+
+    setTimeout(() => URL.revokeObjectURL(url), 60000);
+  } catch {
+    Alerta.fire({
+      icon: 'error',
+      title: 'No se pudo abrir el archivo',
+      text: 'El archivo guardado está dañado o incompleto.'
+    });
+  }
 }
 
 function PanelAdmin() {
@@ -352,7 +396,7 @@ function PanelAdmin() {
   };
 
   const cerrarSesion = () => {
-    localStorage.removeItem('tipoUsuario');
+    terminarSesion();
     navigate('/sesion');
   };
 
@@ -899,8 +943,10 @@ function PanelAdmin() {
                                 {item.archivoUrl ? (
                                   <a
                                     href={item.archivoUrl}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
+                                    download={item.archivo}
+                                    onClick={(evento) =>
+                                      abrirArchivo(evento, item)
+                                    }
                                     className="fw-bold"
                                   >
                                     Abrir archivo:{' '}

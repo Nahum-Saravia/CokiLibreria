@@ -44,3 +44,25 @@
   color: var(--color-tinta);
   background-color: var(--color-superficie-alt);
 }
+
+/* Formularios armados con html dentro de la alerta (varios campos) */
+.coki-alerta .coki-alerta__texto {
+  margin: 0 0 1rem;
+}
+
+.coki-alerta .swal2-html-container .swal2-input-label {
+  display: block;
+  margin: 0.75rem 0 0.35rem;
+}
+
+.coki-alerta .swal2-html-container .swal2-input {
+  width: 100%;
+  max-width: 100%;
+  margin: 0;
+  box-sizing: border-box;
+}
+
+.coki-alerta .swal2-html-container .swal2-input[readonly] {
+  opacity: 0.75;
+  cursor: default;
+}

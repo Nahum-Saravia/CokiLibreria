@@ -14,10 +14,15 @@ import casa from '../../assets/img/casa.png';
 import './Navbar.css';
 import CartPanel from '../Cart/CartPanel';
 import Alerta from '../Alerta/alerta';
+import {
+  leerCarrito,
+  cerrarSesion as terminarSesion
+} from '../../data/almacenamiento';
 
 function Navbar() {
   const navigate = useNavigate();
   const [carritoAbierto, setCarritoAbierto] = useState(false);
+  const [menuAbierto, setMenuAbierto] = useState(false);
   const [cantidadCarrito, setCantidadCarrito] = useState(0);
 
   const [tipoUsuario, setTipoUsuario] = useState(
@@ -38,24 +43,11 @@ function Navbar() {
     };
   }, []);
 
-  const calcularCantidadCarrito = () => {
-    const guardado = localStorage.getItem('coki-carrito');
-
-    if (!guardado) {
-      return 0;
-    }
-
-    try {
-      const carrito = JSON.parse(guardado);
-
-      return carrito.reduce(
-        (total, item) => total + Number(item.cantidad || 0),
-        0
-      );
-    } catch {
-      return 0;
-    }
-  };
+  const calcularCantidadCarrito = () =>
+    leerCarrito().reduce(
+      (total, item) => total + Number(item.cantidad || 0),
+      0
+    );
 
   useEffect(() => {
     const actualizarCantidad = () => {
@@ -101,8 +93,7 @@ function Navbar() {
       return;
     }
 
-    localStorage.removeItem('tipoUsuario');
-    window.dispatchEvent(new Event('sesionCambiada'));
+    terminarSesion();
 
     await Alerta.fire({
       icon: 'success',
@@ -111,6 +102,13 @@ function Navbar() {
     });
 
     navigate('/sesion');
+  };
+
+  // Cierra el menú móvil antes de abrir el carrito: si el Offcanvas queda
+  // abierto, su focus trap no deja escribir en los inputs de las alertas
+  const abrirCarrito = () => {
+    setMenuAbierto(false);
+    setCarritoAbierto(true);
   };
 
   const esAdmin = tipoUsuario === 'admin';
@@ -123,6 +121,8 @@ function Navbar() {
       as="header"
       expand="lg"
       collapseOnSelect
+      expanded={menuAbierto}
+      onToggle={setMenuAbierto}
       className="coki-navbar py-3"
     >
       <Container fluid>
@@ -256,9 +256,7 @@ function Navbar() {
                       variant="link"
                       aria-label="Ver carrito"
                       className="d-inline-flex text-reset rounded-pill px-3 coki-navbar__carrito"
-                      onClick={() =>
-                        setCarritoAbierto(true)
-                      }
+                      onClick={abrirCarrito}
                     >
                       <CartIcon cantidad={cantidadCarrito} />
                     </Button>
@@ -346,9 +344,7 @@ function Navbar() {
                     <Button
                       type="button"
                       variant="link"
-                      onClick={() =>
-                        setCarritoAbierto(true)
-                      }
+                      onClick={abrirCarrito}
                       className="d-flex align-items-center gap-3 fw-bold text-reset text-decoration-none px-3 rounded-3 coki-offcanvas__carrito"
                     >
                       <CartIcon cantidad={cantidadCarrito} />
