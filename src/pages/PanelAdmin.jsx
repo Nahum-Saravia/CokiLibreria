@@ -6,6 +6,7 @@ import {
 } from 'react-bootstrap';
 import './PanelAdmin.css';
 import Alerta from '../components/Alerta/alerta';
+import ActualizarPrecios from '../components/Inflacion/ActualizarPrecios';
 import {
   leerProductos, guardarProductos,
   leerPedidos, guardarPedidos,
@@ -676,6 +677,11 @@ function PanelAdmin() {
             </div>
           </Card.Body>
         </Card>
+
+        <ActualizarPrecios
+          productos={productos}
+          onAplicar={setProductos}
+        />
 
         <Card className="coki-panel mb-4">
           <Card.Body className="p-4">
