@@ -4,44 +4,26 @@
 }
 
 .sesion-header {
-  text-align: center;
   color: var(--color-sobre-fondo);
-  padding: var(--esp-xl) var(--esp-md) var(--esp-lg);
+  padding-top: var(--esp-xl);
 }
 
 .sesion-header h1 {
-  margin: var(--esp-md) 0 var(--esp-sm);
   font-size: 2.5rem;
 }
 
 .sesion-header p {
-  margin: 0;
   font-size: 1.05rem;
-  font-weight: 600;
 }
 
 .sesion-logo {
   width: 82px;
   height: 82px;
-  object-fit: contain;
-}
-
-.sesion-container {
-  padding-top: var(--esp-md);
 }
 
 .sesion-title {
   color: var(--color-sobre-fondo);
-  text-align: center;
-  margin-bottom: var(--esp-md);
   font-size: 1.7rem;
-}
-
-.sesion-card {
-  background-color: var(--color-superficie);
-  border: var(--borde);
-  border-radius: var(--radio-lg);
-  box-shadow: var(--sombra-dura);
 }
 
 .sesion-card .card-body {
@@ -49,12 +31,8 @@
 }
 
 .sesion-legend {
-  width: 100%;
   color: var(--color-tinta);
   font-family: var(--fuente-titulos);
-  font-weight: 600;
-  text-align: center;
-  margin-bottom: var(--esp-lg);
 }
 
 .sesion-card .form-label {
@@ -62,13 +40,16 @@
   font-weight: 800;
 }
 
+.sesion-input,
+.sesion-input:focus {
+  color: var(--color-tinta);
+  background-color: #fff !important;
+}
+
 .sesion-input {
+  min-height: 44px;
   border: var(--borde);
   border-radius: var(--radio-md);
-  color: var(--color-texto);
-  background-color: var(--color-superficie-alt);
-  font-family: var(--fuente-texto);
-  min-height: 44px;
 }
 
 .sesion-input:focus {
@@ -76,14 +57,8 @@
   box-shadow: 0 0 0 0.2rem rgba(222, 84, 153, 0.2);
 }
 
+/* El resto del estilo viene de .btn-primary (index.css) */
 .sesion-button {
-  background-color: var(--color-primario);
-  border: var(--borde);
-  border-radius: var(--radio-md);
-  box-shadow: var(--sombra-dura-sm);
-  color: #fff;
-  font-family: var(--fuente-texto);
-  font-weight: 800;
   padding: 0.65rem 1rem;
 }
 
@@ -96,34 +71,24 @@
 }
 
 .sesion-link-text,
-.sesion-back {
-  text-align: center;
+.sesion-back,
+.sesion-back a,
+.sesion-link-button {
   color: var(--color-sobre-fondo);
-  font-weight: 600;
 }
 
-.sesion-link-text {
-  margin: var(--esp-md) 0 0;
-}
-
-.sesion-link-text a,
-.sesion-back a {
-  color: var(--color-sobre-fondo);
+.sesion-back a,
+.sesion-link-button {
   font-weight: 800;
 }
 
-.sesion-link-text a:hover,
-.sesion-back a:hover {
+.sesion-back a:hover,
+.sesion-link-button:hover,
+.sesion-link-button:focus {
   color: #fff;
 }
 
-.sesion-back {
-  margin-top: var(--esp-lg);
-}
-
 .sesion-requisitos {
-  margin: 0 0 var(--esp-md);
-  padding: var(--esp-sm) var(--esp-md);
   background-color: rgba(47, 42, 86, 0.06);
   border-left: 4px solid var(--color-acento);
   border-radius: var(--radio-sm);
@@ -133,13 +98,11 @@
 }
 
 .sesion-requisitos p {
-  margin: 0 0 var(--esp-xs);
   color: var(--color-tinta);
   font-weight: 800;
 }
 
 .sesion-requisitos ul {
-  margin: 0;
   padding-left: 1.2rem;
 }
 
@@ -147,45 +110,15 @@
   margin-bottom: 0.1rem;
 }
 
-.sesion-link-button {
-  padding: 0;
-  border: 0;
-  background: transparent;
-  color: var(--color-sobre-fondo);
-  font-family: var(--fuente-texto);
-  font-weight: 800;
-  text-decoration: underline;
-  cursor: pointer;
-}
-
-.sesion-link-button:hover,
-.sesion-link-button:focus {
-  color: #fff;
-}
-
-.sesion-password-wrapper {
-  position: relative;
-}
-
 .sesion-password-input {
   padding-right: 3rem;
 }
 
 .sesion-password-toggle {
-  position: absolute;
-  top: 50%;
   right: 0.7rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
   width: 2rem;
   height: 2rem;
-  padding: 0;
-  border: 0;
-  background: transparent;
   color: var(--color-tinta);
-  transform: translateY(-50%);
-  cursor: pointer;
 }
 
 .sesion-password-toggle:hover,
@@ -197,16 +130,4 @@
   outline: 2px solid var(--color-primario);
   outline-offset: 2px;
   border-radius: 4px;
-}
-
-.sesion-input {
-  background-color: #fff !important;
-  color: var(--color-tinta);
-}
-
-.sesion-input:focus {
-  background-color: #fff !important;
-  color: var(--color-tinta);
-  border-color: var(--color-primario);
-  box-shadow: 0 0 0 0.2rem rgba(222, 84, 153, 0.2);
 }

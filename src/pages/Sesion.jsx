@@ -214,20 +214,20 @@ function Sesion() {
 
   return (
     <main className="sesion-page">
-      <header className="sesion-header">
+      <header className="sesion-header text-center px-3 pb-4">
         <img
           src={logo}
           alt="Logo de Coki Librería"
-          className="sesion-logo"
+          className="sesion-logo object-fit-contain"
         />
 
-        <h1>
+        <h1 className="mt-3 mb-2">
           {esRegistro
             ? 'Registrarse'
             : 'Inicio de sesión'}
         </h1>
 
-        <p>
+        <p className="m-0 fw-semibold">
           {esRegistro
             ? 'Creá tu cuenta de Coki Librería'
             : esAdmin
@@ -236,7 +236,7 @@ function Sesion() {
         </p>
       </header>
 
-      <Container className="sesion-container">
+      <Container className="pt-3">
         <Row className="justify-content-center">
           <Col
             xs={12}
@@ -246,7 +246,7 @@ function Sesion() {
             xl={5}
             xxl={4}
           >
-            <h2 className="sesion-title">
+            <h2 className="sesion-title text-center mb-3">
               {esRegistro
                 ? 'Crear una cuenta'
                 : esAdmin
@@ -254,14 +254,14 @@ function Sesion() {
                   : 'Acceso de usuario'}
             </h2>
 
-            <Card className="sesion-card">
+            <Card className="sesion-card coki-panel">
               <Card.Body className="p-4">
                 <Form
                   onSubmit={handleSubmit}
                   noValidate
                 >
                   <fieldset>
-                    <legend className="sesion-legend">
+                    <legend className="sesion-legend text-center fw-semibold mb-4">
                       {esRegistro
                         ? 'Datos de registro'
                         : 'Datos de acceso'}
@@ -351,7 +351,7 @@ function Sesion() {
                         Contraseña:
                       </Form.Label>
 
-                      <div className="sesion-password-wrapper">
+                      <div className="position-relative">
                         <Form.Control
                           type={
                             mostrarContrasena
@@ -378,7 +378,7 @@ function Sesion() {
 
                         <button
                           type="button"
-                          className="sesion-password-toggle"
+                          className="sesion-password-toggle position-absolute top-50 translate-middle-y d-flex align-items-center justify-content-center p-0 border-0 bg-transparent"
                           onClick={() =>
                             setMostrarContrasena(
                               !mostrarContrasena
@@ -433,12 +433,12 @@ function Sesion() {
 
                     {esRegistro && (
                       <>
-                        <div className="sesion-requisitos">
-                          <p>
+                        <div className="sesion-requisitos mb-3 py-2 px-3">
+                          <p className="mb-1">
                             La contraseña debe tener:
                           </p>
 
-                          <ul>
+                          <ul className="mb-0">
                             <li>
                               Mínimo 8 caracteres.
                             </li>
@@ -465,7 +465,7 @@ function Sesion() {
                             Repetir contraseña:
                           </Form.Label>
 
-                          <div className="sesion-password-wrapper">
+                          <div className="position-relative">
                             <Form.Control
                               type={
                                 mostrarContrasena
@@ -487,7 +487,7 @@ function Sesion() {
 
                             <button
                               type="button"
-                              className="sesion-password-toggle"
+                              className="sesion-password-toggle position-absolute top-50 translate-middle-y d-flex align-items-center justify-content-center p-0 border-0 bg-transparent"
                               onClick={() =>
                                 setMostrarContrasena(
                                   !mostrarContrasena
@@ -558,11 +558,11 @@ function Sesion() {
             </Card>
 
             {!esAdmin && !esRegistro && (
-              <p className="sesion-link-text">
+              <p className="sesion-link-text text-center fw-semibold mt-3 mb-0">
                 ¿No tenés una cuenta?{' '}
                 <button
                   type="button"
-                  className="sesion-link-button"
+                  className="sesion-link-button p-0 border-0 bg-transparent text-decoration-underline"
                   onClick={() =>
                     cambiarModoRegistro(true)
                   }
@@ -573,11 +573,11 @@ function Sesion() {
             )}
 
             {!esAdmin && esRegistro && (
-              <p className="sesion-link-text">
+              <p className="sesion-link-text text-center fw-semibold mt-3 mb-0">
                 ¿Ya tenés una cuenta?{' '}
                 <button
                   type="button"
-                  className="sesion-link-button"
+                  className="sesion-link-button p-0 border-0 bg-transparent text-decoration-underline"
                   onClick={() =>
                     cambiarModoRegistro(false)
                   }
@@ -587,7 +587,7 @@ function Sesion() {
               </p>
             )}
 
-            <p className="sesion-back">
+            <p className="sesion-back text-center fw-semibold mt-4">
               <Link to="/">
                 Volver al inicio
               </Link>

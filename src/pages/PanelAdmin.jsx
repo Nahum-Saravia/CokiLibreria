@@ -402,21 +402,21 @@ function PanelAdmin() {
 
   return (
     <main className="admin-page">
-      <Container className="admin-container">
-        <section className="admin-heading">
-          <p className="admin-kicker">
+      <Container className="admin-container pt-3">
+        <section className="admin-heading mb-4">
+          <p className="admin-kicker text-uppercase fw-bold mb-1">
             Gestión interna
           </p>
 
-          <h1>
+          <h1 className="m-0">
             Panel de administrador
           </h1>
         </section>
 
         <Row className="g-3 mb-4">
           <Col xs={12} sm={4}>
-            <Card className="admin-stat-card h-100">
-              <Card.Body>
+            <Card className="admin-stat-card coki-panel h-100">
+              <Card.Body className="d-flex flex-column gap-1 p-4">
                 <span>
                   Pedidos pendientes
                 </span>
@@ -433,8 +433,8 @@ function PanelAdmin() {
           </Col>
 
           <Col xs={12} sm={4}>
-            <Card className="admin-stat-card h-100">
-              <Card.Body>
+            <Card className="admin-stat-card coki-panel h-100">
+              <Card.Body className="d-flex flex-column gap-1 p-4">
                 <div className="d-flex flex-wrap justify-content-between align-items-center gap-2">
                   <span>
                     Ventas
@@ -483,8 +483,8 @@ function PanelAdmin() {
           </Col>
 
           <Col xs={12} sm={4}>
-            <Card className="admin-stat-card h-100">
-              <Card.Body>
+            <Card className="admin-stat-card coki-panel h-100">
+              <Card.Body className="d-flex flex-column gap-1 p-4">
                 <span>
                   Productos con poco stock
                 </span>
@@ -501,15 +501,15 @@ function PanelAdmin() {
           </Col>
         </Row>
 
-        <Card className="admin-section-card mb-4">
-          <Card.Body>
-            <div className="admin-section-header">
+        <Card className="coki-panel mb-4">
+          <Card.Body className="p-4">
+            <div className="admin-section-header d-flex align-items-center justify-content-between gap-3 mb-4">
               <div>
-                <p className="admin-kicker">
+                <p className="admin-kicker text-uppercase fw-bold mb-0">
                   Seguimiento
                 </p>
 
-                <h2>
+                <h2 className="m-0">
                   Estado de pedidos
                 </h2>
               </div>
@@ -517,7 +517,7 @@ function PanelAdmin() {
               <div className="d-flex flex-wrap gap-2">
                 <Button
                   type="button"
-                  className="admin-primary-button"
+                  className="admin-primary-button text-nowrap"
                   onClick={eliminarEntregados}
                 >
                   Eliminar entregados
@@ -525,7 +525,7 @@ function PanelAdmin() {
 
                 <Button
                   type="button"
-                  className="admin-primary-button"
+                  className="admin-primary-button text-nowrap"
                   onClick={eliminarCancelados}
                 >
                   Eliminar cancelados
@@ -533,7 +533,7 @@ function PanelAdmin() {
               </div>
             </div>
 
-            <Row className="g-3 admin-filters">
+            <Row className="g-3 admin-filters mb-4">
               <Col xs={12} md={6}>
                 <Form.Group controlId="estado">
                   <Form.Label>
@@ -584,9 +584,9 @@ function PanelAdmin() {
               </Col>
             </Row>
 
-            <div className="admin-table-wrapper">
+            <div className="overflow-x-auto">
               <Table
-                className="admin-table"
+                className="admin-table mb-0 align-middle"
                 responsive
               >
                 <thead>
@@ -628,7 +628,7 @@ function PanelAdmin() {
 
                       <td>
                         <span
-                          className={`admin-status admin-status--${claseEstado(
+                          className={`estado-pedido d-inline-block text-nowrap estado-pedido--${claseEstado(
                             pedido.estado
                           )}`}
                         >
@@ -646,7 +646,7 @@ function PanelAdmin() {
                         <div className="d-flex gap-2">
                           <Button
                             type="button"
-                            className="admin-table-button"
+                            className="admin-table-button text-nowrap"
                             onClick={() =>
                               setPedidoAVer(
                                 pedido
@@ -658,7 +658,7 @@ function PanelAdmin() {
 
                           <Button
                             type="button"
-                            className="admin-table-button"
+                            className="admin-table-button text-nowrap"
                             onClick={() =>
                               abrirGestion(
                                 pedido
@@ -677,22 +677,22 @@ function PanelAdmin() {
           </Card.Body>
         </Card>
 
-        <Card className="admin-section-card mb-4">
-          <Card.Body>
-            <div className="admin-section-header">
+        <Card className="coki-panel mb-4">
+          <Card.Body className="p-4">
+            <div className="admin-section-header d-flex align-items-center justify-content-between gap-3 mb-4">
               <div>
-                <p className="admin-kicker">
+                <p className="admin-kicker text-uppercase fw-bold mb-0">
                   Inventario
                 </p>
 
-                <h2>
+                <h2 className="m-0">
                   Stock de librería
                 </h2>
               </div>
 
               <Button
                 type="button"
-                className="admin-primary-button"
+                className="admin-primary-button text-nowrap"
                 onClick={
                   abrirAgregarProducto
                 }
@@ -701,7 +701,7 @@ function PanelAdmin() {
               </Button>
             </div>
 
-            <Row className="g-3 admin-filters">
+            <Row className="g-3 admin-filters mb-4">
               <Col xs={12} md={6}>
                 <Form.Group controlId="buscarProducto">
                   <Form.Label>
@@ -760,7 +760,7 @@ function PanelAdmin() {
               </p>
             )}
 
-            <Row className="g-3 admin-stock-grid">
+            <Row className="g-3 mt-2">
               {productosFiltrados.map((producto) => (
                 <Col
                   xs={12}
@@ -768,7 +768,7 @@ function PanelAdmin() {
                   lg={4}
                   key={producto.id}
                 >
-                  <article className="admin-product">
+                  <article className="admin-product h-100 d-flex flex-column gap-2 p-4">
                     <strong>
                       {producto.nombre}
                     </strong>
@@ -793,7 +793,7 @@ function PanelAdmin() {
 
                     <Button
                       type="button"
-                      className="admin-table-button"
+                      className="admin-table-button text-nowrap mt-auto align-self-start"
                       onClick={() =>
                         abrirActualizarStock(
                           producto
@@ -809,7 +809,7 @@ function PanelAdmin() {
           </Card.Body>
         </Card>
 
-        <div className="admin-logout-wrapper">
+        <div className="d-flex justify-content-center mt-4">
           <Button
             type="button"
             className="admin-logout-button"
@@ -827,7 +827,7 @@ function PanelAdmin() {
         }
         centered
         size="lg"
-        contentClassName="admin-modal"
+        contentClassName="admin-modal coki-panel"
       >
         {pedidoAVer && (
           <>
@@ -843,7 +843,7 @@ function PanelAdmin() {
             <Modal.Body>
               <Row className="g-3 mb-4">
                 <Col xs={12} sm={6}>
-                  <p className="admin-modal__dato">
+                  <p className="admin-modal__dato m-0 text-uppercase fw-bold">
                     Cliente
                   </p>
 
@@ -853,7 +853,7 @@ function PanelAdmin() {
                 </Col>
 
                 <Col xs={12} sm={6}>
-                  <p className="admin-modal__dato">
+                  <p className="admin-modal__dato m-0 text-uppercase fw-bold">
                     Teléfono
                   </p>
 
@@ -864,7 +864,7 @@ function PanelAdmin() {
                 </Col>
 
                 <Col xs={12} sm={6}>
-                  <p className="admin-modal__dato">
+                  <p className="admin-modal__dato m-0 text-uppercase fw-bold">
                     Fecha
                   </p>
 
@@ -874,12 +874,12 @@ function PanelAdmin() {
                 </Col>
 
                 <Col xs={12} sm={6}>
-                  <p className="admin-modal__dato">
+                  <p className="admin-modal__dato m-0 text-uppercase fw-bold">
                     Estado
                   </p>
 
                   <span
-                    className={`admin-status admin-status--${claseEstado(
+                    className={`estado-pedido d-inline-block text-nowrap estado-pedido--${claseEstado(
                       pedidoAVer.estado
                     )}`}
                   >
@@ -889,7 +889,7 @@ function PanelAdmin() {
               </Row>
 
               <Table
-                className="admin-table"
+                className="admin-table mb-0 align-middle"
                 responsive
               >
                 <thead>
@@ -994,7 +994,7 @@ function PanelAdmin() {
 
               {pedidoAVer.notas && (
                 <div className="mt-3">
-                  <p className="admin-modal__dato">
+                  <p className="admin-modal__dato m-0 text-uppercase fw-bold">
                     Notas del cliente
                   </p>
 
@@ -1014,7 +1014,7 @@ function PanelAdmin() {
           setPedidoAGestionar(null)
         }
         centered
-        contentClassName="admin-modal"
+        contentClassName="admin-modal coki-panel"
       >
         {pedidoAGestionar && (
           <>
@@ -1066,7 +1066,7 @@ function PanelAdmin() {
             <Modal.Footer>
               <Button
                 type="button"
-                className="admin-table-button"
+                className="admin-table-button text-nowrap"
                 onClick={() =>
                   setPedidoAGestionar(null)
                 }
@@ -1076,7 +1076,7 @@ function PanelAdmin() {
 
               <Button
                 type="button"
-                className="admin-primary-button"
+                className="admin-primary-button text-nowrap"
                 onClick={guardarEstado}
               >
                 Guardar cambios
@@ -1092,7 +1092,7 @@ function PanelAdmin() {
           setProductoAActualizar(null)
         }
         centered
-        contentClassName="admin-modal"
+        contentClassName="admin-modal coki-panel"
       >
         {productoAActualizar && (
           <>
@@ -1134,7 +1134,7 @@ function PanelAdmin() {
             <Modal.Footer>
               <Button
                 type="button"
-                className="admin-table-button"
+                className="admin-table-button text-nowrap"
                 onClick={() =>
                   setProductoAActualizar(
                     null
@@ -1146,7 +1146,7 @@ function PanelAdmin() {
 
               <Button
                 type="button"
-                className="admin-primary-button"
+                className="admin-primary-button text-nowrap"
                 onClick={guardarStock}
                 disabled={!stockValido}
               >
@@ -1163,7 +1163,7 @@ function PanelAdmin() {
           setMostrarAgregar(false)
         }
         centered
-        contentClassName="admin-modal"
+        contentClassName="admin-modal coki-panel"
       >
         <Modal.Header closeButton>
           <Modal.Title
@@ -1303,7 +1303,7 @@ function PanelAdmin() {
                 <img
                   src={productoNuevo.imagen}
                   alt="Vista previa del producto"
-                  className="admin-modal__preview mt-2"
+                  className="admin-modal__preview mt-2 d-block mw-100 object-fit-contain p-1 bg-white"
                 />
               )}
             </Col>
@@ -1313,7 +1313,7 @@ function PanelAdmin() {
         <Modal.Footer>
           <Button
             type="button"
-            className="admin-table-button"
+            className="admin-table-button text-nowrap"
             onClick={() =>
               setMostrarAgregar(false)
             }
@@ -1323,7 +1323,7 @@ function PanelAdmin() {
 
           <Button
             type="button"
-            className="admin-primary-button"
+            className="admin-primary-button text-nowrap"
             onClick={guardarProductoNuevo}
             disabled={!productoNuevoValido}
           >
