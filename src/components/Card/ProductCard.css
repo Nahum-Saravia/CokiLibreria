@@ -3,7 +3,6 @@
   border: var(--borde);
   border-radius: var(--radio-md);
   box-shadow: var(--sombra-dura-sm);
-  overflow: hidden;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
@@ -47,14 +46,12 @@
 }
 
 .coki-product-card__stock {
-  margin-left: auto;
   color: var(--color-texto-suave);
 }
 
 .coki-product-card__cantidad {
   border: var(--borde);
   border-radius: var(--radio-md);
-  overflow: hidden;
   background-color: #fde3ef;
 }
 

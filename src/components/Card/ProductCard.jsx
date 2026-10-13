@@ -18,7 +18,7 @@ function ProductCard({ imagen, nombre, categoria, descripcion, precio, stock, on
   };
 
   return (
-    <Card as="article" className="h-100 coki-product-card">
+    <Card as="article" className="h-100 overflow-hidden coki-product-card">
       <div className="coki-product-card__media">
         <Card.Img
           variant="top"
@@ -39,7 +39,7 @@ function ProductCard({ imagen, nombre, categoria, descripcion, precio, stock, on
         <div className="d-flex flex-wrap align-items-center gap-2 mt-auto pt-2">
           <span className="fw-bold coki-product-card__precio">$ {precio.toLocaleString('es-AR')}</span>
           {puedeComprar && !sinStock && (
-            <div className="d-flex align-items-center coki-product-card__cantidad">
+            <div className="d-flex align-items-center overflow-hidden coki-product-card__cantidad">
               <button
                 type="button"
                 aria-label={`Restar una unidad de ${nombre}`}
@@ -71,7 +71,7 @@ function ProductCard({ imagen, nombre, categoria, descripcion, precio, stock, on
               {sinStock ? 'Sin stock' : 'Agregar'}
             </Button>
           ) : (
-            <span className="small fw-bold coki-product-card__stock">Stock: {stock}</span>
+            <span className="small fw-bold ms-auto coki-product-card__stock">Stock: {stock}</span>
           )}
         </div>
       </Card.Body>

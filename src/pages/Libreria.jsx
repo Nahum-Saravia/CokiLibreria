@@ -1,11 +1,9 @@
 import { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
 import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Card from 'react-bootstrap/Card';
 import Form from 'react-bootstrap/Form';
-import Button from 'react-bootstrap/Button';
 import Pagination from 'react-bootstrap/Pagination';
 import Toast from 'react-bootstrap/Toast';
 import ToastContainer from 'react-bootstrap/ToastContainer';
@@ -117,9 +115,6 @@ function Libreria() {
       <title>Librería Coki - Útiles escolares</title>
       <Container className="py-4 py-md-5">
         <div className="d-flex flex-wrap align-items-start gap-3 mb-4">
-          <Button as={Link} to="/" variant="light">
-            Volver al menú
-          </Button>
           <div className="flex-grow-1">
             <h1 className="fw-bold coki-texto-claro">Productos de librería</h1>
             <p className="coki-texto-claro mb-0">
@@ -128,7 +123,7 @@ function Libreria() {
           </div>
         </div>
 
-        <Card className="coki-libreria">
+        <Card className="coki-libreria coki-panel">
           <Card.Body className="p-3 p-md-4">
             <Card.Title as="h2" className="fw-bold mb-3">
               Librería

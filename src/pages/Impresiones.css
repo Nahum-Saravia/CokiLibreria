@@ -1,9 +1,5 @@
 .coki-impresiones {
   color: var(--color-tinta);
-  background-color: var(--color-superficie);
-  border: var(--borde);
-  border-radius: var(--radio-lg);
-  box-shadow: var(--sombra-dura);
 }
 
 .coki-impresiones .form-label {

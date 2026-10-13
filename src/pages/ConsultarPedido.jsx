@@ -46,22 +46,22 @@ function ConsultarPedido() {
 
   return (
     <main className="pedido-page">
-      <Container className="pedido-container">
+      <Container className="pt-3">
         <Row className="justify-content-center">
           <Col xs={12} lg={9} xl={8}>
-            <section className="pedido-header">
-              <Link to="/" className="pedido-back">
+            <section className="pedido-header text-center mb-4">
+              <Link to="/" className="pedido-back d-inline-block text-decoration-none">
                 Volver al menú
               </Link>
 
-              <h1>Consultar pedido</h1>
+              <h1 className="mt-4 mb-2">Consultar pedido</h1>
 
-              <p>
+              <p className="m-0 fw-semibold">
                 Buscá tu pedido con el número de retiro o teléfono.
               </p>
             </section>
 
-            <Card className="pedido-card">
+            <Card className="pedido-card coki-panel">
               <Card.Body>
                 <h2>Estado de tu pedido</h2>
 
@@ -96,13 +96,13 @@ function ConsultarPedido() {
                 </Form>
 
                 {error && (
-                  <div className="pedido-resultado">
+                  <div className="pedido-resultado mt-4 p-3 fw-bold">
                     {error}
                   </div>
                 )}
 
                 {pedidosEncontrados && pedidosEncontrados.length === 0 && (
-                  <div className="pedido-resultado">
+                  <div className="pedido-resultado mt-4 p-3 fw-bold">
                     No encontramos pedidos con ese número o teléfono.
                   </div>
                 )}
@@ -111,26 +111,26 @@ function ConsultarPedido() {
                   pedidosEncontrados.map((pedido) => (
                     <article
                       key={pedido.retiro}
-                      className="pedido-resultado"
+                      className="pedido-resultado mt-4 p-3 fw-bold"
                     >
-                      <div className="pedido-resultado__encabezado">
+                      <div className="d-flex flex-wrap justify-content-between align-items-start gap-2 mb-3">
                         <div>
-                          <h3>Pedido {pedido.retiro}</h3>
-                          <p className="pedido-resultado__fecha">
+                          <h3 className="fs-5 m-0">Pedido {pedido.retiro}</h3>
+                          <p className="pedido-resultado__fecha m-0 fw-semibold">
                             {pedido.fecha}
                           </p>
                         </div>
 
                         <span
-                          className={`pedido-estado pedido-estado--${claseEstado(pedido.estado)}`}
+                          className={`estado-pedido d-inline-block text-nowrap estado-pedido--${claseEstado(pedido.estado)}`}
                         >
                           {pedido.estado}
                         </span>
                       </div>
 
-                      <ul className="pedido-resultado__items">
+                      <ul className="pedido-resultado__items list-unstyled">
                         {pedido.items.map((item) => (
-                          <li key={item.producto}>
+                          <li key={item.producto} className="d-flex justify-content-between gap-2 fw-semibold">
                             <span>
                               {item.cantidad} x {item.producto}
                             </span>
@@ -143,7 +143,7 @@ function ConsultarPedido() {
                         ))}
                       </ul>
 
-                      <p className="pedido-resultado__total">
+                      <p className="pedido-resultado__total m-0 text-end">
                         Total: {formatearPrecio(calcularTotal(pedido))}
                       </p>
                       {pedido.notas && (
